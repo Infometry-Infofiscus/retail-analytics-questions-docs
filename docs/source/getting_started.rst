@@ -20,7 +20,7 @@ Who Should Contribute
 
 ----
 
-How to Submit *(~10 minutes per entry)*
+How to Submit *(~5 minutes per entry)*
 -----------------------------------------
 
 All contributions go through the UI Form. The dataset repository is managed
