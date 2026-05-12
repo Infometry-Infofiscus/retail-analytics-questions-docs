@@ -32,9 +32,8 @@ updates in real time as you type. See :doc:`data_spec` for full field reference.
 Step 3 — Copy and Send
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Copy the generated JSON from the Live JSON panel.
-Send it via the `Discussions page <https://github.com/Infometry-Infofiscus/retail-analytics-questions-docs/discussions>`_
-or contact a maintainer directly.
+Once all fields are complete, click the **Submit** button in the form.
+Your entry will be sent directly to the maintainers for review.
 
 .. _naming:
 
