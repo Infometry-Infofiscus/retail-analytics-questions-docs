@@ -121,6 +121,15 @@ Field Reference
      - No
      - Free text SQL
 
+Dropdown Allowed Values
+-----------------------
+
+**difficulty:** ``Easy`` | ``Medium`` | ``Hard`` | ``Expert``
+
+**db_type:** ``BigQuery`` | ``Snowflake`` | ``Redshift`` | ``PostgreSQL`` | ``MySQL`` | ``Oracle`` | ``Azure Synapse`` | ``Other``
+
+**domain:** ``Retail`` | ``Healthcare`` | ``HighTech (SaaS)`` | ``Finance`` | ``Manufacturing`` | ``Supply Chain`` | ``Other``
+
 Canonical Payload Shape
 ------------------------
 
@@ -140,7 +149,7 @@ Canonical Payload Shape
        }
      ],
      "chain_of_thought": [
-       "Step 1: Goal is to rank product categories by net revenue for Q4."
+       "Step 1: Rank product categories by net revenue for Q4."
      ],
      "schema_tables": {
        "fact_tables": ["fact_sales"],
@@ -159,11 +168,11 @@ Transformation Rules
 
 1. ``required_metrics_kpis`` — flat array of KPI name strings (trimmed)
 2. ``aggregation_logic`` — key-value object: key = metric name, value = formula
-3. Fact table list → ``data_model.facts`` as comma-separated string
-4. Dim table list → ``data_model.dims`` as comma-separated string
+3. Fact table list → ``data_model.facts`` comma-separated string
+4. Dim table list → ``data_model.dims`` comma-separated string
 5. ``chain_of_thought`` — submit as ``[]`` if empty
 6. ``sql`` — submit as ``""`` if empty
-7. Preserve all ``data_model`` keys even if blank
+7. All ``data_model`` keys must be present even if blank
 
 Validation Rules
 -----------------
