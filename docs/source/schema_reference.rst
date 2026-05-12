@@ -2,6 +2,7 @@ Schema Reference
 ================
 
 Standard retail schema used across all contributions.
+Use these exact table and column names in your submissions.
 
 Tables
 ------
@@ -41,7 +42,7 @@ Common Join Patterns
 
    -- Sales with store
    FROM fact_sales s
-   JOIN dim_store st  ON s.store_id   = st.store_id
+   JOIN dim_store st  ON s.store_id = st.store_id
 
    -- Full star join
    FROM fact_sales s
@@ -61,5 +62,11 @@ Common Filters
    -- Rolling 12-month window
    AND d.full_date >= CURRENT_DATE - INTERVAL '12 months'
 
-   -- Specific quarter/year
+   -- Rolling 90-day window
+   AND d.full_date >= CURRENT_DATE - INTERVAL '90 days'
+
+   -- Specific quarter and year
    AND d.year = 2024 AND d.quarter = 4
+
+   -- Exclude newly opened stores
+   AND st.opening_date <= CURRENT_DATE - INTERVAL '90 days'
