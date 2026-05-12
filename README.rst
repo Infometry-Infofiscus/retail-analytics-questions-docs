@@ -1,9 +1,6 @@
-Template for the Read the Docs tutorial
-=======================================
+Retail Analytics Text-to-SQL Dataset
+=====================================
 
-This GitHub template includes fictional Python library
-with some basic Sphinx docs.
+Community-driven dataset of retail analytics use cases for training and benchmarking text-to-SQL systems.
 
-Read the tutorial here:
-
-https://docs.readthedocs.io/en/stable/tutorial/
+Full docs: https://retail-analytics-questions-docs.readthedocs.io
