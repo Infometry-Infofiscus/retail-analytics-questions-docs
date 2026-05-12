@@ -47,6 +47,8 @@ inventory investment, promotional spend, and category expansion decisions.
 Conditional aggregation with ``CASE WHEN`` pivots both years into one row per category.
 ``NULLIF`` guards division-by-zero for new categories with no prior year sales.
 
+**SQL**
+
 .. code-block:: sql
 
    SELECT
@@ -69,6 +71,44 @@ Conditional aggregation with ``CASE WHEN`` pivots both years into one row per ca
      AND d.quarter = 4
    GROUP BY p.category
    ORDER BY revenue_q4_2024 DESC;
+
+**Raw JSON Submission**
+
+.. code-block:: json
+
+   {
+     "q_id": 1,
+     "difficulty": "Medium",
+     "db_type": "Relational (SQL)",
+     "domain": "Retail",
+     "instruction": "Which product categories generated the most revenue last quarter, and how does that compare to the same quarter last year?",
+     "context": "Merchandising leadership preparing for annual planning meeting. Need to identify growing vs declining categories YoY to guide inventory investment, promotional spend, and category expansion decisions.",
+     "metrics_and_aggregation": [
+       {"kpi_metric_name": "Category Revenue (Current Quarter)", "aggregation_formula": "SUM(net_sales) WHERE year=2024 AND quarter=4, grouped by category"},
+       {"kpi_metric_name": "Category Revenue (Prior Year Quarter)", "aggregation_formula": "SUM(net_sales) WHERE year=2023 AND quarter=4, grouped by category"},
+       {"kpi_metric_name": "YoY Revenue Change (Absolute)", "aggregation_formula": "revenue_q4_2024 - revenue_q4_2023"},
+       {"kpi_metric_name": "YoY Revenue Change (%)", "aggregation_formula": "ROUND(100.0 * delta / NULLIF(prior_year, 0), 2)"}
+     ],
+     "chain_of_thought": [
+       "Step 1: Rank product categories by net revenue for Q4 2024 and compare against Q4 2023.",
+       "Step 2: Need fact_sales, dim_product, dim_date.",
+       "Step 3: Filter Q4 only, years 2023 and 2024. Exclude returns (is_return = FALSE).",
+       "Step 4: Use conditional aggregation CASE WHEN to pivot both years into same row per category.",
+       "Step 5: Order by Q4 2024 revenue descending to surface top performers first.",
+       "Step 6: NULLIF guards division-by-zero for new categories with no prior year sales.",
+       "Step 7: Only completed transactions counted. Returns excluded at filter level."
+     ],
+     "schema_tables": {
+       "fact_tables": ["fact_sales"],
+       "dimension_tables": ["dim_product", "dim_date"]
+     },
+     "data_model_layers": {
+       "hierarchies": "Date > Quarter > Year, Product > Category",
+       "aggregations": "agg_quarterly_revenue_by_category",
+       "snapshots": ""
+     },
+     "sql": ""
+   }
 
 ----
 
@@ -109,6 +149,8 @@ staffing, and promotional scheduling.
 CTE3 per-category annual baseline. CTE4 dual ``RANK()`` window functions.
 Final ``WHERE`` keeps top-5 peak + bottom-5 trough weeks only.
 Current year excluded — incomplete data skews averages.
+
+**SQL**
 
 .. code-block:: sql
 
@@ -154,6 +196,44 @@ Current year excluded — incomplete data skews averages.
    WHERE peak_rank <= 5 OR trough_rank <= 5
    ORDER BY category, iso_week;
 
+**Raw JSON Submission**
+
+.. code-block:: json
+
+   {
+     "q_id": 2,
+     "difficulty": "Hard",
+     "db_type": "Relational (SQL)",
+     "domain": "Retail",
+     "instruction": "Based on the past three years of weekly sales, which weeks of the year show the strongest and weakest sales patterns for each product category?",
+     "context": "Demand planning team building a seasonal sales calendar to guide procurement, staffing, and promotional scheduling. Identifying historically strong and weak weeks per category enables proactive stock alignment and marketing campaign timing.",
+     "metrics_and_aggregation": [
+       {"kpi_metric_name": "Average Weekly Revenue (3-Year)", "aggregation_formula": "AVG(SUM(net_sales)) grouped by category, iso_week across 3 prior years"},
+       {"kpi_metric_name": "Annual Average Weekly Revenue per Category", "aggregation_formula": "AVG(avg_weekly_revenue_3yr) grouped by category — seasonal baseline"},
+       {"kpi_metric_name": "Seasonality Index", "aggregation_formula": "ROUND(avg_weekly_revenue_3yr / NULLIF(annual_avg_weekly_revenue, 0), 3)"},
+       {"kpi_metric_name": "Peak / Trough Rank", "aggregation_formula": "RANK() OVER (PARTITION BY category ORDER BY avg_weekly_revenue_3yr DESC/ASC)"}
+     ],
+     "chain_of_thought": [
+       "Step 1: Build seasonal demand index per product category by ISO week — top 5 peak and bottom 5 trough weeks.",
+       "Step 2: Need fact_sales for net revenue, dim_product for category, dim_date for ISO week and year.",
+       "Step 3: Filter non-returns, 3 prior complete years. Current year excluded — incomplete data skews averages.",
+       "Step 4: CTE1 weekly revenue. CTE2 3-year average per category+week. CTE3 annual baseline. CTE4 dual RANK().",
+       "Step 5: Final SELECT filters peak_rank <= 5 OR trough_rank <= 5.",
+       "Step 6: NULLIF guards division-by-zero. Categories with fewer than 3 years still valid but less stable.",
+       "Step 7: Seasonality index is relative signal — layer absolute revenue alongside for planning decisions."
+     ],
+     "schema_tables": {
+       "fact_tables": ["fact_sales"],
+       "dimension_tables": ["dim_product", "dim_date"]
+     },
+     "data_model_layers": {
+       "hierarchies": "Date > ISO Week > Year, Product > Category",
+       "aggregations": "agg_weekly_category_revenue_3yr, agg_seasonality_index",
+       "snapshots": "snap_seasonal_calendar_annual"
+     },
+     "sql": ""
+   }
+
 ----
 
 Slow Moving Inventory Stock Value
@@ -193,6 +273,8 @@ No inventory quantity table exists — 90-day sales used as stock proxy.
 ``HAVING`` filters to products with no sale ever OR >60 days stagnant.
 ``COALESCE`` handles zero-sales products cleanly.
 
+**SQL**
+
 .. code-block:: sql
 
    SELECT
@@ -221,6 +303,43 @@ No inventory quantity table exists — 90-day sales used as stock proxy.
    HAVING MAX(last_sale.last_sale_date) IS NULL
       OR DATEDIFF(CURRENT_DATE, MAX(last_sale.last_sale_date)) > 60
    ORDER BY estimated_stagnant_value DESC;
+
+**Raw JSON Submission**
+
+.. code-block:: json
+
+   {
+     "q_id": 3,
+     "difficulty": "Medium",
+     "db_type": "Relational (SQL)",
+     "domain": "Retail",
+     "instruction": "Which products have been sitting in inventory for more than 60 days without a sale, and what is their estimated stock value?",
+     "context": "Inventory management team runs monthly review to identify stagnant products. Zero sales in 60+ days ties up capital, consumes warehouse space, risks obsolescence. Report drives decisions on markdowns, clearance promotions, or supplier returns.",
+     "metrics_and_aggregation": [
+       {"kpi_metric_name": "Days Since Last Sale", "aggregation_formula": "DATEDIFF(CURRENT_DATE, MAX(last_sale_date)) per product_id"},
+       {"kpi_metric_name": "Units Sold Last 90 Days (Stock Proxy)", "aggregation_formula": "SUM(quantity) WHERE full_date >= CURRENT_DATE - 90 days AND is_return = FALSE, grouped by product_id"},
+       {"kpi_metric_name": "Estimated Stagnant Stock Value", "aggregation_formula": "ROUND(unit_cost * COALESCE(units_sold_last_90d, 0), 2) per product"}
+     ],
+     "chain_of_thought": [
+       "Step 1: Surface all active products with no sales in 60+ days and estimate tied-up capital value.",
+       "Step 2: Need dim_product, fact_sales, dim_date. No inventory table — use 90-day sales as stock proxy.",
+       "Step 3: Filter non-returns only. Active products from dim_product. Two date windows needed.",
+       "Step 4: Estimated stock value = unit_cost x units_sold_last_90d. COALESCE handles zero sales. ROUND to 2dp.",
+       "Step 5: Order by estimated_stagnant_value DESC — highest capital-at-risk first.",
+       "Step 6: HAVING filters last_sale_date IS NULL OR days_since_last_sale > 60. LEFT JOINs include zero-history products.",
+       "Step 7: Stock value is a proxy not actual on-hand quantity — interpret with caution."
+     ],
+     "schema_tables": {
+       "fact_tables": ["fact_sales"],
+       "dimension_tables": ["dim_product", "dim_date"]
+     },
+     "data_model_layers": {
+       "hierarchies": "Product > Sub-Category > Category > Brand",
+       "aggregations": "agg_slow_moving_inventory_monthly",
+       "snapshots": "snap_inventory_stagnant_60d"
+     },
+     "sql": ""
+   }
 
 ----
 
@@ -263,6 +382,8 @@ CTE3 filters stores above average via ``CROSS JOIN``. Final query joins all dims
 groups by store+category. New stores excluded via ``opening_date`` filter to avoid
 low-volume distortion.
 
+**SQL**
+
 .. code-block:: sql
 
    WITH store_return_rates AS (
@@ -299,6 +420,44 @@ low-volume distortion.
      AND st.opening_date <= CURRENT_DATE - INTERVAL '90 days'
    GROUP BY st.store_name, st.city, st.region, p.category, ca.avg_return_rate
    ORDER BY st.store_name, category_return_rate_pct DESC;
+
+**Raw JSON Submission**
+
+.. code-block:: json
+
+   {
+     "q_id": 4,
+     "difficulty": "Hard",
+     "db_type": "Relational (SQL)",
+     "domain": "Retail",
+     "instruction": "Which stores have a return rate above the company average, and what product categories are driving those returns?",
+     "context": "Operations and QA team runs quarterly returns review. Stores with abnormally high return rates flagged for investigation. Report drives coaching conversations with store managers and product team escalations.",
+     "metrics_and_aggregation": [
+       {"kpi_metric_name": "Store Return Rate (%)", "aggregation_formula": "ROUND(100.0 * COUNT(CASE WHEN is_return = TRUE THEN 1 END) / COUNT(*), 2) grouped by store_id, last 90 days"},
+       {"kpi_metric_name": "Company Average Return Rate (%)", "aggregation_formula": "ROUND(AVG(return_rate_pct), 2) across all stores — benchmark"},
+       {"kpi_metric_name": "Category Return Rate (%) per High-Return Store", "aggregation_formula": "ROUND(100.0 * COUNT(CASE WHEN is_return = TRUE THEN 1 END) / COUNT(*), 2) grouped by store_id, category"},
+       {"kpi_metric_name": "Category Return Count", "aggregation_formula": "COUNT(CASE WHEN is_return = TRUE THEN 1 END) grouped by store_id, category"}
+     ],
+     "chain_of_thought": [
+       "Step 1: Identify stores exceeding company-average return rate and drill into which categories drive returns.",
+       "Step 2: Need fact_sales, dim_store, dim_product, dim_date.",
+       "Step 3: Filter last 90 days. Exclude newly opened stores via opening_date filter.",
+       "Step 4: CTE1 per-store rates. CTE2 company average scalar. CTE3 filters stores above average via CROSS JOIN.",
+       "Step 5: Final SELECT joins high_return_stores back to all dims, groups by store+category.",
+       "Step 6: CROSS JOIN passes benchmark into every output row. Stores with few transactions may have volatile rates.",
+       "Step 7: Return rate computed on all transactions including returns in denominator — industry standard."
+     ],
+     "schema_tables": {
+       "fact_tables": ["fact_sales"],
+       "dimension_tables": ["dim_store", "dim_product", "dim_date"]
+     },
+     "data_model_layers": {
+       "hierarchies": "Store > City > Region, Product > Category",
+       "aggregations": "agg_store_return_rate_quarterly, agg_category_return_rate",
+       "snapshots": "snap_store_returns_90d"
+     },
+     "sql": ""
+   }
 
 ----
 
@@ -342,6 +501,8 @@ Final query filters ``spend_quintile = 1``, joins ``dim_customer`` for channel +
 ``avg_order_value`` included as secondary signal — high spend via few large orders vs many
 small orders implies different retention strategies.
 
+**SQL**
+
 .. code-block:: sql
 
    WITH customer_spend AS (
@@ -372,3 +533,41 @@ small orders implies different retention strategies.
    JOIN dim_customer c ON rc.customer_id = c.customer_id
    WHERE rc.spend_quintile = 1
    ORDER BY rc.total_spend_12m DESC;
+
+**Raw JSON Submission**
+
+.. code-block:: json
+
+   {
+     "q_id": 5,
+     "difficulty": "Hard",
+     "db_type": "Relational (SQL)",
+     "domain": "Retail",
+     "instruction": "Who are our top 20% of customers by total spend in the past 12 months, and what channels did they originally come from?",
+     "context": "CRM and loyalty team wants to identify high-value customers for a VIP retention program. Acquisition channel breakdown helps marketing allocate budget toward channels producing highest long-term customer value.",
+     "metrics_and_aggregation": [
+       {"kpi_metric_name": "Total Spend per Customer (12 Months)", "aggregation_formula": "SUM(net_sales) WHERE is_return = FALSE AND full_date >= CURRENT_DATE - 12 months, grouped by customer_id"},
+       {"kpi_metric_name": "Total Transactions per Customer", "aggregation_formula": "COUNT(DISTINCT sale_id) per customer_id, HAVING >= 2"},
+       {"kpi_metric_name": "Spend Quintile (Top 20% = Quintile 1)", "aggregation_formula": "NTILE(5) OVER (ORDER BY total_spend_12m DESC)"},
+       {"kpi_metric_name": "Average Order Value", "aggregation_formula": "ROUND(total_spend_12m / total_transactions, 2) per customer"}
+     ],
+     "chain_of_thought": [
+       "Step 1: Isolate top 20% customers by 12-month net spend and trace back original acquisition channel.",
+       "Step 2: Need fact_sales for spend aggregation, dim_date for 12-month window, dim_customer for channel attributes.",
+       "Step 3: Filter non-returns, rolling 12-month window. Exclude one-time buyers via HAVING COUNT >= 2.",
+       "Step 4: CTE1 aggregates total net sales and transaction count. CTE2 applies NTILE(5) — quintile 1 = top 20%.",
+       "Step 5: Final SELECT filters spend_quintile = 1, joins dim_customer, orders by total_spend_12m DESC.",
+       "Step 6: NTILE splits evenly — borderline customers may sit just inside/outside quintile 1.",
+       "Step 7: avg_order_value as secondary signal — few large orders vs many small orders = different retention strategy."
+     ],
+     "schema_tables": {
+       "fact_tables": ["fact_sales"],
+       "dimension_tables": ["dim_customer", "dim_date"]
+     },
+     "data_model_layers": {
+       "hierarchies": "Customer > Segment > Region, Date > Month > Year",
+       "aggregations": "agg_customer_spend_12m, agg_customer_transactions",
+       "snapshots": "snap_top_customers_quarterly"
+     },
+     "sql": ""
+   }
