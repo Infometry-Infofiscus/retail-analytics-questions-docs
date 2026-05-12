@@ -1,22 +1,32 @@
-Welcome to Lumache's documentation!
-===================================
+Retail Analytics Text-to-SQL Dataset
+======================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
-
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
-
-.. note::
-
-   This project is under active development.
-
-Contents
---------
+A community-driven, open dataset of real-world retail analytics use cases for training and benchmarking text-to-SQL systems.
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Contents
 
-   usage
-   api
+   getting_started
+   data_spec
+   schema_reference
+   contributing
+   examples
+
+Overview
+--------
+
+Most text-to-SQL benchmarks use synthetic or academic data. Real-world retail analytics involves:
+
+- Complex joins across fact and dimension tables
+- Business-specific terminology (slow-moving inventory, high-value customers)
+- Nuanced logic (return rate benchmarking, cohort revenue, seasonality indexing)
+- Domain knowledge generic datasets don't capture
+
+This dataset closes that gap.
+
+Quick Links
+-----------
+
+- `Query Entry Form (UI) <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+- `GitHub Repository <https://github.com/Infometry-Infofiscus/retail-analytics-questions-sql>`_
