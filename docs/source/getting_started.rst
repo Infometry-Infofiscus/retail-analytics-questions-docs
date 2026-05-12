@@ -10,30 +10,38 @@ Who Should Contribute
 - Retail Domain Experts who understand the business problems
 - Anyone who has turned a business question into a SQL query
 
-Quick Start (UI Form — Recommended)
-------------------------------------
+How to Submit
+-------------
 
-1. Open the `Query Entry Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
-2. Fill all required fields — Live JSON panel updates in real time
-3. Copy generated JSON from the Live JSON panel
-4. Save as ``.json`` file following the :ref:`naming convention <naming>`
-5. Place in ``submissions/pending/`` and open a Pull Request
+All contributions go through the UI Form. The dataset repository is managed
+privately by maintainers — contributors submit via the form and maintainers
+handle ingestion.
 
-Quick Start (Manual JSON)
---------------------------
+Step 1 — Open the Form
+~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
+Open the `Query Entry Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+in your browser.
 
-   git clone https://github.com/Infometry-Infofiscus/retail-analytics-questions-sql.git
-   cd retail-analytics-questions-sql
-   cp templates/submission_template.json submissions/pending/retail_<topic>_<desc>.json
+Step 2 — Fill Required Fields
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fill all required fields per :doc:`data_spec`, then submit a Pull Request.
+Complete all required sections. The **Live JSON panel** on the right
+updates in real time as you type. See :doc:`data_spec` for full field reference.
+
+Step 3 — Copy and Send
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Copy the generated JSON from the Live JSON panel.
+Send it via the `Discussions page <https://github.com/Infometry-Infofiscus/retail-analytics-questions-docs/discussions>`_
+or contact a maintainer directly.
 
 .. _naming:
 
 File Naming Convention
 -----------------------
+
+Maintainers will name files on ingest, but use this pattern when sharing:
 
 .. code-block:: text
 
