@@ -1,5 +1,5 @@
 project = "Retail Analytics Text-to-SQL"
-copyright = "2025, Infometry-Infofiscus"
+copyright = "2026, Infofiscus-Conversa"
 author = "Infometry-Infofiscus"
 release = "0.1.0"
 
