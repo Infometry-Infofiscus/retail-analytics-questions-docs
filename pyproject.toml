@@ -1,8 +1,10 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["flit_core>=3.2.0,<4"]
+build-backend = "flit_core.api"
 
 [project]
-name = "lumache"
-authors = [{name = "Graziella", email = "graziella@lumache"}]
-dynamic = ["version", "description"]
+name = "retail-analytics-text2sql"
+version = "0.1.0"
+description = "Retail Analytics Text-to-SQL Dataset docs"
+readme = "README.rst"
+requires-python = ">=3.8"
