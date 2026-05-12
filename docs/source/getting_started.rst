@@ -1,6 +1,14 @@
 Getting Started
 ===============
 
+.. note::
+   📊 Open Dataset · SQL · Retail Domain · Community Contributed
+
+Help build the largest open Text-to-SQL dataset for retail analytics.
+Every query you submit trains better AI for real business problems.
+
+----
+
 Who Should Contribute
 ---------------------
 
@@ -10,8 +18,10 @@ Who Should Contribute
 - Retail Domain Experts who understand the business problems
 - Anyone who has turned a business question into a SQL query
 
-How to Submit
--------------
+----
+
+How to Submit *(~10 minutes per entry)*
+-----------------------------------------
 
 All contributions go through the UI Form. The dataset repository is managed
 privately by maintainers — contributors submit via the form and maintainers
@@ -35,26 +45,25 @@ Step 3 — Copy and Send
 Once all fields are complete, click the **Submit** button in the form.
 Your entry will be sent directly to the maintainers for review.
 
-.. _naming:
+.. tip::
+   Best submissions have clear business context, realistic KPIs,
+   and SQL that actually runs. See :doc:`examples` before writing.
 
-File Naming Convention
------------------------
+----
 
-Maintainers will name files on ingest, but use this pattern when sharing:
+Examples
+--------
 
-.. code-block:: text
+Click any example below to jump directly to the full walkthrough:
 
-   <domain>_<topic>_<short_description>.json
+- :ref:`example-category-revenue-yoy`
+- :ref:`example-seasonal-weekly-sales`
+- :ref:`example-slow-moving-inventory`
+- :ref:`example-store-return-rate`
+- :ref:`example-top-customer-spend`
 
-Rules:
+----
 
-- Lowercase only
-- Words separated by underscores
-- Start with domain prefix (``retail_``, ``finance_``, ``healthcare_``)
-- Under 60 characters total
+.. seealso::
 
-Examples::
-
-   retail_revenue_category_quarterly_decline.json
-   retail_inventory_slow_moving_products.json
-   retail_customers_high_value_segmentation.json
+   :doc:`data_spec` · :doc:`examples` · `Submit Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
