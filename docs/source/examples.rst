@@ -1,9 +1,9 @@
 Examples
 ========
 
-Five reference examples showing the range of difficulty and use cases
-this dataset covers. Use these as a guide when writing your own submission.
-
+Five reference examples showing the range of difficulty, domains, and use cases
+this dataset covers. Examples use retail data but the same patterns apply to
+any supported domain. Use these as a guide when writing your own submission.
 .. contents::
    :local:
    :depth: 1
