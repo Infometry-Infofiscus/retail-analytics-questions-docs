@@ -1,0 +1,146 @@
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+{{ super() }}
+<style>
+  #doubt-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #2980b9;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border: none;
+  }
+  #doubt-modal {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+    width: 320px;
+    z-index: 9999;
+    font-family: sans-serif;
+  }
+  #doubt-modal h4 {
+    margin: 0 0 4px 0;
+    color: #2980b9;
+  }
+  #doubt-modal .page-tag {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 12px;
+  }
+  #doubt-modal input,
+  #doubt-modal textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 6px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+  }
+  #doubt-modal textarea { resize: vertical; }
+  #doubt-modal .submit-btn {
+    background: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  #doubt-modal .submit-btn:hover { background: #1f6391; }
+  #doubt-modal .close-link {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #aaa;
+    cursor: pointer;
+  }
+  #doubt-success {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #27ae60;
+    font-weight: bold;
+  }
+</style>
+{% endblock %}
+
+{% block body_min %}
+{{ super() }}
+
+<!-- Floating Button -->
+<button id="doubt-btn" onclick="toggleDoubt()">💬 Have a Doubt?</button>
+
+<!-- Doubt Modal -->
+<div id="doubt-modal">
+  <h4>📩 Ask Your Doubt</h4>
+  <div class="page-tag" id="page-label"></div>
+
+  <form id="doubt-form"
+        action="https://formspree.io/f/YOUR_FORM_ID"
+        method="POST">
+    <input type="hidden" name="page" id="page-input" />
+    <input type="text"  name="name"  placeholder="Your Name"  required />
+    <input type="email" name="email" placeholder="Your Email" required />
+    <textarea name="doubt" rows="4"
+              placeholder="Describe your doubt clearly..." required></textarea>
+    <button type="submit" class="submit-btn">Send ✉️</button>
+  </form>
+
+  <div id="doubt-success">
+    ✅ Doubt sent! We'll reply on your email.
+  </div>
+
+  <span class="close-link" onclick="toggleDoubt()">✕ Close</span>
+</div>
+
+<script>
+  // Inject current page into form
+  var page = window.location.pathname;
+  document.getElementById('page-label').innerText = '📄 ' + page;
+  document.getElementById('page-input').value = page;
+
+  function toggleDoubt() {
+    var modal = document.getElementById('doubt-modal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // Show success on submit
+  document.getElementById('doubt-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(function(r) {
+      if (r.ok) {
+        form.style.display = 'none';
+        document.getElementById('doubt-success').style.display = 'block';
+        setTimeout(function() {
+          document.getElementById('doubt-modal').style.display = 'none';
+          form.style.display = 'block';
+          form.reset();
+          document.getElementById('doubt-success').style.display = 'none';
+        }, 3000);
+      }
+    });
+  });
+</script>
+{% endblock %}
