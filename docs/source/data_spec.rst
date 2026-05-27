@@ -138,7 +138,7 @@ Canonical Payload Shape
    {
      "q_id": 1,
      "difficulty": "Medium",
-     "db_type": "Relational (SQL)",
+     "db_type": "BigQuery",
      "domain": "Retail",
      "instruction": "Which product categories generated the most revenue last quarter?",
      "context": "Merchandising leadership preparing for annual planning meeting.",
@@ -149,7 +149,7 @@ Canonical Payload Shape
        }
      ],
      "chain_of_thought": [
-       "Step 1: Rank product categories by net revenue for Q4."
+       "Step 1: Rank categories by net revenue for Q4."
      ],
      "schema_tables": {
        "fact_tables": ["fact_sales"],
