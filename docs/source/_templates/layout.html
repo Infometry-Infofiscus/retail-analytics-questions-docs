@@ -81,9 +81,8 @@
 </style>
 {% endblock %}
 
-{% block body_min %}
+{% block body_tag %}
 {{ super() }}
-
 <!-- Floating Button -->
 <button id="doubt-btn" onclick="toggleDoubt()">💬 Have a Doubt?</button>
 
@@ -91,7 +90,6 @@
 <div id="doubt-modal">
   <h4>📩 Ask Your Doubt</h4>
   <div class="page-tag" id="page-label"></div>
-
   <form id="doubt-form"
         action="https://formspree.io/f/xnjrorkj"
         method="POST">
@@ -102,16 +100,13 @@
               placeholder="Describe your doubt clearly..." required></textarea>
     <button type="submit" class="submit-btn">Send ✉️</button>
   </form>
-
   <div id="doubt-success">
     ✅ Doubt sent! We'll reply on your email.
   </div>
-
   <span class="close-link" onclick="toggleDoubt()">✕ Close</span>
 </div>
 
 <script>
-  // Inject current page into form
   var page = window.location.pathname;
   document.getElementById('page-label').innerText = '📄 ' + page;
   document.getElementById('page-input').value = page;
@@ -121,7 +116,6 @@
     modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
   }
 
-  // Show success on submit
   document.getElementById('doubt-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = this;
