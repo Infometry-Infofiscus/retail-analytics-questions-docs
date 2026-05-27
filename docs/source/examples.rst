@@ -10,15 +10,13 @@ writing your own submission.
    :local:
    :depth: 1
 
-----
-
 Retail
-======
+------
 
 .. _example-category-revenue-yoy:
 
 Category Revenue YoY Comparison
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Medium | **Domain:** Retail | **Tables:** fact_sales, dim_product, dim_date
 
@@ -97,7 +95,7 @@ Conditional aggregation with ``CASE WHEN`` pivots both years into one row per ca
 .. _example-slow-moving-inventory:
 
 Slow Moving Inventory Stock Value
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Medium | **Domain:** Retail | **Tables:** fact_sales, dim_product, dim_date
 
@@ -129,7 +127,6 @@ Report drives decisions on markdowns, clearance promotions, or supplier returns.
 **Key Technique**
 
 Two LEFT JOIN subqueries — one for all-time last sale date, one for 90-day volume.
-No inventory quantity table exists — 90-day sales used as stock proxy.
 ``HAVING`` filters to products with no sale ever OR >60 days stagnant.
 ``COALESCE`` handles zero-sales products cleanly.
 
@@ -138,7 +135,7 @@ No inventory quantity table exists — 90-day sales used as stock proxy.
 .. code-block:: json
 
    {
-     "q_id": 3,
+     "q_id": 2,
      "difficulty": "Medium",
      "db_type": "Relational (SQL)",
      "domain": "Retail",
@@ -152,7 +149,7 @@ No inventory quantity table exists — 90-day sales used as stock proxy.
      "chain_of_thought": [
        "Step 1: Surface all active products with no sales in 60+ days and estimate tied-up capital value.",
        "Step 2: Need dim_product, fact_sales, dim_date. No inventory table — use 90-day sales as stock proxy.",
-       "Step 3: Filter non-returns only. Active products from dim_product. Two date windows needed.",
+       "Step 3: Filter non-returns only. Two date windows needed.",
        "Step 4: LEFT JOINs include zero-history products. HAVING filters last_sale_date IS NULL OR days > 60.",
        "Step 5: Order by estimated_stagnant_value DESC — highest capital-at-risk first."
      ],
@@ -168,15 +165,13 @@ No inventory quantity table exists — 90-day sales used as stock proxy.
      "sql": "SELECT p.product_id, p.product_name, p.category, p.unit_cost, COALESCE(recent.units_sold_last_90d, 0) AS units_sold_last_90d, MAX(last_sale.last_sale_date) AS last_sale_date, DATEDIFF(CURRENT_DATE, MAX(last_sale.last_sale_date)) AS days_since_last_sale, ROUND(p.unit_cost * COALESCE(recent.units_sold_last_90d, 0), 2) AS estimated_stagnant_value FROM dim_product p LEFT JOIN (SELECT s.product_id, MAX(d.full_date) AS last_sale_date FROM fact_sales s JOIN dim_date d ON s.date_id = d.date_id WHERE s.is_return = FALSE GROUP BY s.product_id) last_sale ON p.product_id = last_sale.product_id LEFT JOIN (SELECT s.product_id, SUM(s.quantity) AS units_sold_last_90d FROM fact_sales s JOIN dim_date d ON s.date_id = d.date_id WHERE s.is_return = FALSE AND d.full_date >= CURRENT_DATE - INTERVAL '90 days' GROUP BY s.product_id) recent ON p.product_id = recent.product_id GROUP BY p.product_id, p.product_name, p.category, p.unit_cost, recent.units_sold_last_90d HAVING MAX(last_sale.last_sale_date) IS NULL OR DATEDIFF(CURRENT_DATE, MAX(last_sale.last_sale_date)) > 60 ORDER BY estimated_stagnant_value DESC;"
    }
 
-----
-
 Healthcare
-==========
+----------
 
 .. _example-hospital-readmission-rate:
 
 Hospital 30-Day Readmission Rate by Department
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Medium | **Domain:** Healthcare | **Tables:** fact_encounters, dim_patient, dim_department, dim_date
 
@@ -211,7 +206,6 @@ or treatment effectiveness. Departments above benchmark are flagged for interven
 
 Self-join on ``fact_encounters`` to detect readmissions within 30-day window.
 ``DATEDIFF`` between discharge date and next admission date per patient.
-``HAVING`` filters departments above 15% benchmark.
 National benchmark (15.0) passed as literal constant for variance calc.
 
 **Raw JSON Submission**
@@ -219,7 +213,7 @@ National benchmark (15.0) passed as literal constant for variance calc.
 .. code-block:: json
 
    {
-     "q_id": 6,
+     "q_id": 3,
      "difficulty": "Medium",
      "db_type": "PostgreSQL",
      "domain": "Healthcare",
@@ -233,7 +227,7 @@ National benchmark (15.0) passed as literal constant for variance calc.
      ],
      "chain_of_thought": [
        "Step 1: Find departments with 30-day readmission rate above 15% national benchmark.",
-       "Step 2: Need fact_encounters (discharge + readmit events), dim_department, dim_patient, dim_date.",
+       "Step 2: Need fact_encounters, dim_department, dim_patient, dim_date.",
        "Step 3: Self-join fact_encounters on patient_id to find next admission after each discharge.",
        "Step 4: DATEDIFF between discharge_date and next admission_date — flag if <= 30 days.",
        "Step 5: Aggregate by department. Compute rate. Subtract 15.0 for benchmark variance.",
@@ -248,7 +242,7 @@ National benchmark (15.0) passed as literal constant for variance calc.
        "aggregations": "agg_readmission_rate_quarterly",
        "snapshots": "snap_department_outcomes_monthly"
      },
-     "sql": "WITH discharges AS (SELECT e.encounter_id, e.patient_id, e.department_id, d.full_date AS discharge_date FROM fact_encounters e JOIN dim_date d ON e.date_id = d.date_id WHERE e.encounter_type = 'discharge'), readmits AS (SELECT e.patient_id, MIN(d.full_date) AS next_admission_date, e.department_id FROM fact_encounters e JOIN dim_date d ON e.date_id = d.date_id WHERE e.encounter_type = 'admission' GROUP BY e.patient_id, e.department_id), dept_rates AS (SELECT dis.department_id, COUNT(DISTINCT dis.encounter_id) AS total_discharges, COUNT(DISTINCT CASE WHEN DATEDIFF(ra.next_admission_date, dis.discharge_date) <= 30 THEN dis.patient_id END) AS readmissions FROM discharges dis LEFT JOIN readmits ra ON dis.patient_id = ra.patient_id AND ra.next_admission_date > dis.discharge_date GROUP BY dis.department_id) SELECT dp.department_name, dp.division, dr.total_discharges, dr.readmissions, ROUND(100.0 * dr.readmissions / NULLIF(dr.total_discharges, 0), 2) AS readmission_rate_pct, ROUND(100.0 * dr.readmissions / NULLIF(dr.total_discharges, 0), 2) - 15.0 AS variance_from_benchmark FROM dept_rates dr JOIN dim_department dp ON dr.department_id = dp.department_id ORDER BY readmission_rate_pct DESC;"
+     "sql": "WITH discharges AS (SELECT e.encounter_id, e.patient_id, e.department_id, d.full_date AS discharge_date FROM fact_encounters e JOIN dim_date d ON e.date_id = d.date_id WHERE e.encounter_type = 'discharge'), readmits AS (SELECT e.patient_id, MIN(d.full_date) AS next_admission_date FROM fact_encounters e JOIN dim_date d ON e.date_id = d.date_id WHERE e.encounter_type = 'admission' GROUP BY e.patient_id), dept_rates AS (SELECT dis.department_id, COUNT(DISTINCT dis.encounter_id) AS total_discharges, COUNT(DISTINCT CASE WHEN DATEDIFF(ra.next_admission_date, dis.discharge_date) <= 30 THEN dis.patient_id END) AS readmissions FROM discharges dis LEFT JOIN readmits ra ON dis.patient_id = ra.patient_id AND ra.next_admission_date > dis.discharge_date GROUP BY dis.department_id) SELECT dp.department_name, dp.division, dr.total_discharges, dr.readmissions, ROUND(100.0 * dr.readmissions / NULLIF(dr.total_discharges, 0), 2) AS readmission_rate_pct, ROUND(100.0 * dr.readmissions / NULLIF(dr.total_discharges, 0), 2) - 15.0 AS variance_from_benchmark FROM dept_rates dr JOIN dim_department dp ON dr.department_id = dp.department_id ORDER BY readmission_rate_pct DESC;"
    }
 
 ----
@@ -256,7 +250,7 @@ National benchmark (15.0) passed as literal constant for variance calc.
 .. _example-claims-denial-rate:
 
 Insurance Claims Denial Rate by Diagnosis Code
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Hard | **Domain:** Healthcare | **Tables:** fact_claims, dim_patient, dim_provider, dim_date
 
@@ -269,8 +263,7 @@ and which providers are submitting the most denied claims?
 
 Revenue cycle management team investigating claim denial patterns.
 High denial rates on specific diagnosis codes suggest documentation gaps,
-coding errors, or payer-specific policy mismatches. Provider-level breakdown
-helps target training and audit efforts.
+coding errors, or payer-specific policy mismatches.
 
 **KPIs**
 
@@ -301,7 +294,7 @@ Two-level aggregation — diagnosis code level first, then provider drill-down.
 .. code-block:: json
 
    {
-     "q_id": 7,
+     "q_id": 4,
      "difficulty": "Hard",
      "db_type": "Snowflake",
      "domain": "Healthcare",
@@ -334,15 +327,13 @@ Two-level aggregation — diagnosis code level first, then provider drill-down.
      "sql": "WITH diagnosis_denial AS (SELECT diagnosis_code, COUNT(claim_id) AS total_claims, COUNT(CASE WHEN claim_status = 'denied' THEN 1 END) AS denied_claims, ROUND(100.0 * COUNT(CASE WHEN claim_status = 'denied' THEN 1 END) / NULLIF(COUNT(claim_id), 0), 2) AS denial_rate_pct, ROUND(AVG(CASE WHEN claim_status = 'denied' THEN claim_amount END), 2) AS avg_denied_value FROM fact_claims GROUP BY diagnosis_code HAVING ROUND(100.0 * COUNT(CASE WHEN claim_status = 'denied' THEN 1 END) / NULLIF(COUNT(claim_id), 0), 2) > 20), provider_denials AS (SELECT fc.diagnosis_code, fc.provider_id, COUNT(fc.claim_id) AS provider_denied_count, RANK() OVER (PARTITION BY fc.diagnosis_code ORDER BY COUNT(fc.claim_id) DESC) AS denial_rank FROM fact_claims fc WHERE fc.claim_status = 'denied' AND fc.diagnosis_code IN (SELECT diagnosis_code FROM diagnosis_denial) GROUP BY fc.diagnosis_code, fc.provider_id) SELECT dd.diagnosis_code, dd.total_claims, dd.denied_claims, dd.denial_rate_pct, dd.avg_denied_value, p.provider_name, p.specialty, pd.provider_denied_count FROM diagnosis_denial dd JOIN provider_denials pd ON dd.diagnosis_code = pd.diagnosis_code AND pd.denial_rank <= 5 JOIN dim_provider p ON pd.provider_id = p.provider_id ORDER BY dd.denial_rate_pct DESC, pd.denial_rank;"
    }
 
-----
-
 HighTech (SaaS)
-===============
+---------------
 
 .. _example-saas-churn-rate:
 
 Monthly Churn Rate by Subscription Plan
------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Medium | **Domain:** HighTech (SaaS) | **Tables:** fact_subscriptions, dim_customer, dim_plan, dim_date
 
@@ -377,7 +368,6 @@ Monthly tracking enables early intervention before churn compounds.
 
 ``LAG()`` window function to get prior-month active count as denominator.
 Filter ``subscription_end_date`` within each calendar month to identify churns.
-Group by ``plan_tier`` and ``month`` for tier-level breakdown.
 ``Avg Days to Churn`` reveals whether churn is early (onboarding) or late (value).
 
 **Raw JSON Submission**
@@ -385,12 +375,12 @@ Group by ``plan_tier`` and ``month`` for tier-level breakdown.
 .. code-block:: json
 
    {
-     "q_id": 8,
+     "q_id": 5,
      "difficulty": "Medium",
      "db_type": "BigQuery",
      "domain": "HighTech (SaaS)",
      "instruction": "What is the monthly churn rate for each subscription plan tier over the past 6 months, and which plan has the worst retention?",
-     "context": "Product and growth team tracking retention health across Free, Pro, and Enterprise tiers. High churn in a specific tier signals pricing or onboarding issues.",
+     "context": "Product and growth team tracking retention health. High churn in a specific tier signals pricing or onboarding issues.",
      "metrics_and_aggregation": [
        {"kpi_metric_name": "Churned Customers per Month", "aggregation_formula": "COUNT(customer_id) WHERE subscription_status = 'churned' AND churn_date within month, grouped by plan_tier, month"},
        {"kpi_metric_name": "Active Customers Start of Month", "aggregation_formula": "COUNT(customer_id) WHERE status = 'active' at first day of month, per plan_tier"},
@@ -400,10 +390,10 @@ Group by ``plan_tier`` and ``month`` for tier-level breakdown.
      "chain_of_thought": [
        "Step 1: Compute monthly churn rate per plan tier for last 6 months.",
        "Step 2: Need fact_subscriptions, dim_customer, dim_plan, dim_date.",
-       "Step 3: CTE1 — active customers at start of each month per plan. CTE2 — churned customers per month per plan.",
+       "Step 3: CTE1 — active customers at start of each month per plan. CTE2 — churned per month per plan.",
        "Step 4: Join CTE1 and CTE2 on plan_tier + month. Compute churn rate.",
        "Step 5: Include avg_days_to_churn to distinguish early vs late churn patterns.",
-       "Step 6: Order by month ASC, churn_rate_pct DESC per month."
+       "Step 6: Order by month ASC, churn_rate_pct DESC."
      ],
      "schema_tables": {
        "fact_tables": ["fact_subscriptions"],
@@ -422,7 +412,7 @@ Group by ``plan_tier`` and ``month`` for tier-level breakdown.
 .. _example-saas-feature-adoption:
 
 Feature Adoption Funnel by Customer Segment
----------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Hard | **Domain:** HighTech (SaaS) | **Tables:** fact_feature_usage, dim_customer, dim_feature, dim_date
 
@@ -464,12 +454,12 @@ CTE3 repeat users (usage_count >= 3 threshold). Final join computes full funnel.
 .. code-block:: json
 
    {
-     "q_id": 9,
+     "q_id": 6,
      "difficulty": "Hard",
      "db_type": "Snowflake",
      "domain": "HighTech (SaaS)",
      "instruction": "What percentage of customers in each segment have adopted our core features, and where in the adoption funnel are they dropping off?",
-     "context": "Product team running quarterly feature adoption review. Low adoption of core features correlates with churn. Segment-level funnel reveals onboarding vs UX vs fit issues.",
+     "context": "Product team running quarterly feature adoption review. Low adoption of core features correlates with churn.",
      "metrics_and_aggregation": [
        {"kpi_metric_name": "Customers Who Tried Feature", "aggregation_formula": "COUNT(DISTINCT customer_id) per feature_id, per customer_segment"},
        {"kpi_metric_name": "Adoption Rate (%)", "aggregation_formula": "ROUND(100.0 * tried_count / total_segment_customers, 2)"},
@@ -477,13 +467,12 @@ CTE3 repeat users (usage_count >= 3 threshold). Final join computes full funnel.
        {"kpi_metric_name": "Funnel Drop-off Rate (%)", "aggregation_formula": "100.0 - repeat_usage_rate_pct"}
      ],
      "chain_of_thought": [
-       "Step 1: Build feature adoption funnel per customer segment — trial rate and repeat usage rate.",
+       "Step 1: Build feature adoption funnel per customer segment.",
        "Step 2: Need fact_feature_usage, dim_customer, dim_feature, dim_date.",
        "Step 3: CTE1 — total active customers per segment (baseline denominator).",
        "Step 4: CTE2 — distinct customers who used each feature at least once.",
        "Step 5: CTE3 — customers with usage_count >= 3 (repeat/sticky usage threshold).",
-       "Step 6: Join all CTEs, compute adoption_rate and repeat_usage_rate.",
-       "Step 7: RANK() per segment by drop-off_rate DESC — worst funnel leaks first."
+       "Step 6: RANK() per segment by drop-off_rate DESC — worst funnel leaks first."
      ],
      "schema_tables": {
        "fact_tables": ["fact_feature_usage"],
@@ -494,18 +483,16 @@ CTE3 repeat users (usage_count >= 3 threshold). Final join computes full funnel.
        "aggregations": "agg_feature_adoption_by_segment, agg_repeat_usage_rate",
        "snapshots": "snap_feature_funnel_quarterly"
      },
-     "sql": "WITH segment_baseline AS (SELECT c.customer_segment, COUNT(DISTINCT c.customer_id) AS total_customers FROM dim_customer c WHERE c.customer_status = 'active' GROUP BY c.customer_segment), feature_trials AS (SELECT fu.feature_id, c.customer_segment, COUNT(DISTINCT fu.customer_id) AS tried_count FROM fact_feature_usage fu JOIN dim_customer c ON fu.customer_id = c.customer_id GROUP BY fu.feature_id, c.customer_segment), repeat_users AS (SELECT fu.feature_id, c.customer_segment, COUNT(DISTINCT fu.customer_id) AS repeat_count FROM fact_feature_usage fu JOIN dim_customer c ON fu.customer_id = c.customer_id GROUP BY fu.feature_id, c.customer_segment HAVING COUNT(fu.usage_event_id) >= 3) SELECT df.feature_name, ft.customer_segment, sb.total_customers, ft.tried_count, ROUND(100.0 * ft.tried_count / NULLIF(sb.total_customers, 0), 2) AS adoption_rate_pct, COALESCE(ru.repeat_count, 0) AS repeat_count, ROUND(100.0 * COALESCE(ru.repeat_count, 0) / NULLIF(ft.tried_count, 0), 2) AS repeat_usage_rate_pct, ROUND(100.0 - ROUND(100.0 * COALESCE(ru.repeat_count, 0) / NULLIF(ft.tried_count, 0), 2), 2) AS dropoff_rate_pct, RANK() OVER (PARTITION BY ft.customer_segment ORDER BY ROUND(100.0 - ROUND(100.0 * COALESCE(ru.repeat_count, 0) / NULLIF(ft.tried_count, 0), 2), 2) DESC) AS dropoff_rank FROM feature_trials ft JOIN segment_baseline sb ON ft.customer_segment = sb.customer_segment JOIN dim_feature df ON ft.feature_id = df.feature_id LEFT JOIN repeat_users ru ON ft.feature_id = ru.feature_id AND ft.customer_segment = ru.customer_segment ORDER BY ft.customer_segment, dropoff_rate_pct DESC;"
+     "sql": "WITH segment_baseline AS (SELECT c.customer_segment, COUNT(DISTINCT c.customer_id) AS total_customers FROM dim_customer c WHERE c.customer_status = 'active' GROUP BY c.customer_segment), feature_trials AS (SELECT fu.feature_id, c.customer_segment, COUNT(DISTINCT fu.customer_id) AS tried_count FROM fact_feature_usage fu JOIN dim_customer c ON fu.customer_id = c.customer_id GROUP BY fu.feature_id, c.customer_segment), repeat_users AS (SELECT fu.feature_id, c.customer_segment, COUNT(DISTINCT fu.customer_id) AS repeat_count FROM fact_feature_usage fu JOIN dim_customer c ON fu.customer_id = c.customer_id GROUP BY fu.feature_id, c.customer_segment HAVING COUNT(fu.usage_event_id) >= 3) SELECT df.feature_name, ft.customer_segment, sb.total_customers, ft.tried_count, ROUND(100.0 * ft.tried_count / NULLIF(sb.total_customers, 0), 2) AS adoption_rate_pct, COALESCE(ru.repeat_count, 0) AS repeat_count, ROUND(100.0 * COALESCE(ru.repeat_count, 0) / NULLIF(ft.tried_count, 0), 2) AS repeat_usage_rate_pct, ROUND(100.0 - ROUND(100.0 * COALESCE(ru.repeat_count, 0) / NULLIF(ft.tried_count, 0), 2), 2) AS dropoff_rate_pct FROM feature_trials ft JOIN segment_baseline sb ON ft.customer_segment = sb.customer_segment JOIN dim_feature df ON ft.feature_id = df.feature_id LEFT JOIN repeat_users ru ON ft.feature_id = ru.feature_id AND ft.customer_segment = ru.customer_segment ORDER BY ft.customer_segment, dropoff_rate_pct DESC;"
    }
 
-----
-
 Finance
-=======
+-------
 
 .. _example-finance-portfolio-performance:
 
 Portfolio Performance vs Benchmark
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Hard | **Domain:** Finance | **Tables:** fact_transactions, dim_asset, dim_portfolio, dim_date
 
@@ -538,7 +525,7 @@ Asset-class breakdown identifies whether under-performance is concentrated or br
 
 **Key Technique**
 
-Start/end value computed via ``FIRST_VALUE`` and ``LAST_VALUE`` window functions
+Start/end value via ``FIRST_VALUE`` and ``LAST_VALUE`` window functions
 partitioned by portfolio_id ordered by date.
 Alpha = portfolio return minus benchmark constant from dim table.
 Asset class contribution uses weighted return aggregation.
@@ -548,7 +535,7 @@ Asset class contribution uses weighted return aggregation.
 .. code-block:: json
 
    {
-     "q_id": 10,
+     "q_id": 7,
      "difficulty": "Hard",
      "db_type": "Redshift",
      "domain": "Finance",
@@ -566,7 +553,7 @@ Asset class contribution uses weighted return aggregation.
        "Step 3: CTE1 — start and end portfolio value using FIRST_VALUE/LAST_VALUE over 12-month window.",
        "Step 4: CTE2 — portfolio return % and alpha vs benchmark from dim_portfolio.",
        "Step 5: CTE3 — asset class weighted return contribution within each portfolio.",
-       "Step 6: Order portfolios by alpha ASC — worst underperformers first for action."
+       "Step 6: Order portfolios by alpha ASC — worst underperformers first."
      ],
      "schema_tables": {
        "fact_tables": ["fact_transactions"],
@@ -580,15 +567,13 @@ Asset class contribution uses weighted return aggregation.
      "sql": "WITH portfolio_values AS (SELECT t.portfolio_id, FIRST_VALUE(t.portfolio_value) OVER (PARTITION BY t.portfolio_id ORDER BY d.full_date ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS start_value, LAST_VALUE(t.portfolio_value) OVER (PARTITION BY t.portfolio_id ORDER BY d.full_date ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS end_value FROM fact_transactions t JOIN dim_date d ON t.date_id = d.date_id WHERE d.full_date >= CURRENT_DATE - INTERVAL '12 months' GROUP BY t.portfolio_id, t.portfolio_value, d.full_date), portfolio_returns AS (SELECT pv.portfolio_id, MAX(pv.start_value) AS start_value, MAX(pv.end_value) AS end_value, ROUND(100.0 * (MAX(pv.end_value) - MAX(pv.start_value)) / NULLIF(MAX(pv.start_value), 0), 2) AS portfolio_return_pct FROM portfolio_values pv GROUP BY pv.portfolio_id), asset_contribution AS (SELECT t.portfolio_id, a.asset_class, ROUND(SUM(t.asset_return_pct * t.asset_weight), 4) AS class_contribution FROM fact_transactions t JOIN dim_asset a ON t.asset_id = a.asset_id JOIN dim_date d ON t.date_id = d.date_id WHERE d.full_date >= CURRENT_DATE - INTERVAL '12 months' GROUP BY t.portfolio_id, a.asset_class) SELECT p.portfolio_name, pr.portfolio_return_pct, p.benchmark_return_12m AS benchmark_return_pct, ROUND(pr.portfolio_return_pct - p.benchmark_return_12m, 2) AS alpha, ac.asset_class, ac.class_contribution FROM portfolio_returns pr JOIN dim_portfolio p ON pr.portfolio_id = p.portfolio_id JOIN asset_contribution ac ON pr.portfolio_id = ac.portfolio_id ORDER BY alpha ASC, ac.class_contribution ASC;"
    }
 
-----
-
 Manufacturing
-=============
+-------------
 
 .. _example-manufacturing-oee:
 
 Overall Equipment Effectiveness (OEE) by Production Line
-----------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Hard | **Domain:** Manufacturing | **Tables:** fact_production, dim_equipment, dim_shift, dim_date
 
@@ -602,7 +587,7 @@ is dragging the score down?
 
 Plant operations manager running monthly equipment utilization review.
 OEE below 85% (world-class threshold) triggers targeted maintenance or process audits.
-Component breakdown (availability vs performance vs quality) directs the right fix.
+Component breakdown directs the right fix.
 
 **KPIs**
 
@@ -627,19 +612,18 @@ Component breakdown (availability vs performance vs quality) directs the right f
 All three OEE components computed in single CTE using conditional aggregation.
 OEE = product of three ratios (multiplied, not averaged).
 ``CASE WHEN`` identifies the weakest component per line for root cause routing.
-Lines below 85% flagged with ``gap_to_worldclass`` for prioritization.
 
 **Raw JSON Submission**
 
 .. code-block:: json
 
    {
-     "q_id": 11,
+     "q_id": 8,
      "difficulty": "Hard",
      "db_type": "Azure Synapse",
      "domain": "Manufacturing",
      "instruction": "What is the OEE score for each production line over the past quarter, and which component is dragging the score down?",
-     "context": "Plant operations manager reviewing equipment utilization. OEE below 85% triggers maintenance or process audit. Component breakdown directs the right fix.",
+     "context": "Plant operations manager reviewing equipment utilization. OEE below 85% triggers maintenance or process audit.",
      "metrics_and_aggregation": [
        {"kpi_metric_name": "Availability (%)", "aggregation_formula": "ROUND(100.0 * SUM(planned_time - downtime_minutes) / NULLIF(SUM(planned_time), 0), 2) per equipment_line"},
        {"kpi_metric_name": "Performance (%)", "aggregation_formula": "ROUND(100.0 * SUM(actual_output) / NULLIF(SUM(theoretical_max_output), 0), 2)"},
@@ -652,7 +636,7 @@ Lines below 85% flagged with ``gap_to_worldclass`` for prioritization.
        "Step 2: Need fact_production, dim_equipment, dim_shift, dim_date.",
        "Step 3: CTE1 — compute availability, performance, quality per equipment_line in one pass.",
        "Step 4: CTE2 — multiply three ratios for OEE score. Compute gap to 85% world-class.",
-       "Step 5: CASE WHEN identifies weakest component (min of three) for root cause routing.",
+       "Step 5: CASE WHEN identifies weakest component for root cause routing.",
        "Step 6: Order by oee_score ASC — worst performing lines first."
      ],
      "schema_tables": {
@@ -664,18 +648,16 @@ Lines below 85% flagged with ``gap_to_worldclass`` for prioritization.
        "aggregations": "agg_oee_quarterly_by_line, agg_oee_components",
        "snapshots": "snap_equipment_oee_monthly"
      },
-     "sql": "WITH oee_components AS (SELECT e.equipment_line, e.plant_name, ROUND(100.0 * SUM(p.planned_time_minutes - p.downtime_minutes) / NULLIF(SUM(p.planned_time_minutes), 0), 2) AS availability_pct, ROUND(100.0 * SUM(p.actual_output) / NULLIF(SUM(p.theoretical_max_output), 0), 2) AS performance_pct, ROUND(100.0 * SUM(p.good_units) / NULLIF(SUM(p.total_units_produced), 0), 2) AS quality_pct FROM fact_production p JOIN dim_equipment e ON p.equipment_id = e.equipment_id JOIN dim_date d ON p.date_id = d.date_id WHERE d.quarter = DATEPART(QUARTER, DATEADD(QUARTER, -1, CURRENT_DATE)) AND d.year = YEAR(DATEADD(QUARTER, -1, CURRENT_DATE)) GROUP BY e.equipment_line, e.plant_name), oee_scores AS (SELECT equipment_line, plant_name, availability_pct, performance_pct, quality_pct, ROUND(availability_pct * performance_pct * quality_pct / 10000.0, 2) AS oee_score, ROUND(85.0 - ROUND(availability_pct * performance_pct * quality_pct / 10000.0, 2), 2) AS gap_to_worldclass, CASE WHEN LEAST(availability_pct, performance_pct, quality_pct) = availability_pct THEN 'Availability' WHEN LEAST(availability_pct, performance_pct, quality_pct) = performance_pct THEN 'Performance' ELSE 'Quality' END AS weakest_component FROM oee_components) SELECT plant_name, equipment_line, availability_pct, performance_pct, quality_pct, oee_score, gap_to_worldclass, weakest_component FROM oee_scores ORDER BY oee_score ASC;"
+     "sql": "WITH oee_components AS (SELECT e.equipment_line, e.plant_name, ROUND(100.0 * SUM(p.planned_time_minutes - p.downtime_minutes) / NULLIF(SUM(p.planned_time_minutes), 0), 2) AS availability_pct, ROUND(100.0 * SUM(p.actual_output) / NULLIF(SUM(p.theoretical_max_output), 0), 2) AS performance_pct, ROUND(100.0 * SUM(p.good_units) / NULLIF(SUM(p.total_units_produced), 0), 2) AS quality_pct FROM fact_production p JOIN dim_equipment e ON p.equipment_id = e.equipment_id JOIN dim_date d ON p.date_id = d.date_id WHERE d.quarter = DATEPART(QUARTER, DATEADD(QUARTER, -1, CURRENT_DATE)) GROUP BY e.equipment_line, e.plant_name), oee_scores AS (SELECT equipment_line, plant_name, availability_pct, performance_pct, quality_pct, ROUND(availability_pct * performance_pct * quality_pct / 10000.0, 2) AS oee_score, ROUND(85.0 - ROUND(availability_pct * performance_pct * quality_pct / 10000.0, 2), 2) AS gap_to_worldclass, CASE WHEN LEAST(availability_pct, performance_pct, quality_pct) = availability_pct THEN 'Availability' WHEN LEAST(availability_pct, performance_pct, quality_pct) = performance_pct THEN 'Performance' ELSE 'Quality' END AS weakest_component FROM oee_components) SELECT plant_name, equipment_line, availability_pct, performance_pct, quality_pct, oee_score, gap_to_worldclass, weakest_component FROM oee_scores ORDER BY oee_score ASC;"
    }
 
-----
-
 Supply Chain
-============
+------------
 
 .. _example-supplychain-supplier-lead-time:
 
 Supplier Lead Time Variance Analysis
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Difficulty:** Medium | **Domain:** Supply Chain | **Tables:** fact_purchase_orders, dim_supplier, dim_product, dim_date
 
@@ -712,7 +694,6 @@ and emergency procurement costs. SLA breach rate drives contract renegotiation d
 
 ``DATEDIFF`` per PO for actual lead time. Compare to ``agreed_lead_time_days`` from dim.
 ``CASE WHEN actual > agreed THEN 1 END`` flags late orders.
-Aggregate breach rate and avg cost per supplier.
 ``HAVING breach_rate > 20`` filters chronic offenders.
 
 **Raw JSON Submission**
@@ -720,12 +701,12 @@ Aggregate breach rate and avg cost per supplier.
 .. code-block:: json
 
    {
-     "q_id": 12,
+     "q_id": 9,
      "difficulty": "Medium",
      "db_type": "PostgreSQL",
      "domain": "Supply Chain",
      "instruction": "Which suppliers consistently deliver outside their agreed lead time windows, and what is the financial impact of late deliveries?",
-     "context": "Procurement team quarterly supplier review. High lead time variance causes stock-outs and emergency procurement costs. SLA breach rate drives contract decisions.",
+     "context": "Procurement team quarterly supplier review. High lead time variance causes stock-outs and emergency procurement costs.",
      "metrics_and_aggregation": [
        {"kpi_metric_name": "Actual Lead Time (days)", "aggregation_formula": "DATEDIFF(actual_delivery_date, order_date) per purchase_order_id"},
        {"kpi_metric_name": "Lead Time Variance (days)", "aggregation_formula": "actual_lead_time_days - dim_supplier.agreed_lead_time_days"},
@@ -738,7 +719,7 @@ Aggregate breach rate and avg cost per supplier.
        "Step 3: Compute actual_lead_time = DATEDIFF(actual_delivery_date, order_date) per PO.",
        "Step 4: Compare vs dim_supplier.agreed_lead_time_days. Flag late = actual > agreed.",
        "Step 5: Aggregate per supplier — breach_rate, avg_variance, avg_late_cost.",
-       "Step 6: HAVING breach_rate > 20. Order by avg_late_cost DESC — highest financial impact first."
+       "Step 6: HAVING breach_rate > 20. Order by avg_late_cost DESC."
      ],
      "schema_tables": {
        "fact_tables": ["fact_purchase_orders"],
