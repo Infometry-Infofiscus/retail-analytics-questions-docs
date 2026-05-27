@@ -10,7 +10,7 @@ Before You Begin
 - Read :doc:`data_spec` — required fields, validation rules, dropdown values
 - Read :doc:`schema_reference` — standard table and column names
 - Read :doc:`examples` — see what good entries look like
-- Base your use case on a real or realistic business scenario
+- Base your use case on a real or realistic business scenario from **any domain**
 
 Submission Steps
 -----------------
@@ -40,7 +40,7 @@ Step 4 — Submit to Maintainers
 Paste your JSON in a new `Discussion thread <https://github.com/Infometry-Infofiscus/retail-analytics-questions-docs/discussions>`_
 with the title format::
 
-   [Submission] retail_<topic>_<short_description>
+   [Submission] <domain>_<topic>_<short_description>
 
 Maintainers will review and ingest into the dataset.
 
@@ -49,7 +49,7 @@ Contribution Guidelines
 
 **Do:**
 
-- Use real-world or realistic business scenarios
+- Use real-world or realistic business scenarios from any supported domain
 - Write ``instruction`` as a business user would naturally ask it
 - Write ``aggregation_logic`` in plain language — avoid SQL jargon
 - Use standard schema table names from :doc:`schema_reference`
