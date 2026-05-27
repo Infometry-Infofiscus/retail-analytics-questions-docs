@@ -2,9 +2,9 @@ Getting Started
 ===============
 
 .. note::
-   📊 Open Dataset · SQL · Retail Domain · Community Contributed
+   📊 Open Dataset · SQL · Multi-Domain · Community Contributed
 
-Help build the largest open Text-to-SQL dataset for retail analytics.
+Help build the largest open Text-to-SQL dataset for real-world analytics.
 Every query you submit trains better AI for real business problems.
 
 ----
@@ -12,10 +12,10 @@ Every query you submit trains better AI for real business problems.
 Who Should Contribute
 ---------------------
 
-- Data Analysts writing SQL against retail data warehouses
+- Data Analysts writing SQL against business data warehouses
 - BI Engineers building dashboards and reports
-- Data Scientists working with retail transaction data
-- Retail Domain Experts who understand the business problems
+- Data Scientists working with transactional or operational data
+- Domain Experts who understand business problems across any industry
 - Anyone who has turned a business question into a SQL query
 
 ----
@@ -51,6 +51,21 @@ Your entry will be sent directly to the maintainers for review.
 
 ----
 
+Supported Domains
+-----------------
+
+Submissions are accepted across all domains:
+
+- **Retail** — sales, inventory, returns, customer analytics
+- **Healthcare** — claims, patient outcomes, utilization
+- **HighTech (SaaS)** — usage, churn, ARR, funnel metrics
+- **Finance** — transactions, risk, portfolio performance
+- **Manufacturing** — production, yield, downtime
+- **Supply Chain** — logistics, lead times, supplier performance
+- **Other** — any domain with structured SQL data
+
+----
+
 Examples
 --------
 
@@ -65,5 +80,4 @@ Click any example below to jump directly to the full walkthrough:
 ----
 
 .. seealso::
-
    :doc:`data_spec` · :doc:`examples` · `Submit Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
