@@ -31,78 +31,47 @@
     z-index: 9999;
     font-family: sans-serif;
   }
-  #doubt-modal h4 {
-    margin: 0 0 4px 0;
-    color: #2980b9;
-  }
-  #doubt-modal .page-tag {
-    font-size: 11px;
-    color: #888;
-    margin-bottom: 12px;
-  }
-  #doubt-modal input,
-  #doubt-modal textarea {
-    width: 100%;
-    padding: 8px 10px;
-    margin: 6px 0;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    box-sizing: border-box;
+  #doubt-modal h4 { margin: 0 0 4px 0; color: #2980b9; }
+  #doubt-modal .page-tag { font-size: 11px; color: #888; margin-bottom: 12px; }
+  #doubt-modal input, #doubt-modal textarea {
+    width: 100%; padding: 8px 10px; margin: 6px 0;
+    border: 1px solid #ddd; border-radius: 6px;
+    font-size: 13px; box-sizing: border-box;
   }
   #doubt-modal textarea { resize: vertical; }
   #doubt-modal .submit-btn {
-    background: #2980b9;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 6px;
+    background: #2980b9; color: white; border: none;
+    padding: 10px; width: 100%; border-radius: 6px;
+    cursor: pointer; font-size: 14px; margin-top: 6px;
   }
   #doubt-modal .submit-btn:hover { background: #1f6391; }
   #doubt-modal .close-link {
-    display: block;
-    text-align: center;
-    margin-top: 8px;
-    font-size: 12px;
-    color: #aaa;
-    cursor: pointer;
+    display: block; text-align: center; margin-top: 8px;
+    font-size: 12px; color: #aaa; cursor: pointer;
   }
   #doubt-success {
-    display: none;
-    text-align: center;
-    padding: 20px;
-    color: #27ae60;
-    font-weight: bold;
+    display: none; text-align: center; padding: 20px;
+    color: #27ae60; font-weight: bold;
   }
 </style>
 {% endblock %}
 
-{% block body_tag %}
+{% block footer %}
 {{ super() }}
-<!-- Floating Button -->
+
 <button id="doubt-btn" onclick="toggleDoubt()">💬 Have a Doubt?</button>
 
-<!-- Doubt Modal -->
 <div id="doubt-modal">
   <h4>📩 Ask Your Doubt</h4>
   <div class="page-tag" id="page-label"></div>
-  <form id="doubt-form"
-        action="https://formspree.io/f/xnjrorkj"
-        method="POST">
+  <form id="doubt-form" action="https://formspree.io/f/xnjrorkj" method="POST">
     <input type="hidden" name="page" id="page-input" />
-    <input type="text"  name="name"  placeholder="Your Name"  required />
+    <input type="text" name="name" placeholder="Your Name" required />
     <input type="email" name="email" placeholder="Your Email" required />
-    <textarea name="doubt" rows="4"
-              placeholder="Describe your doubt clearly..." required></textarea>
+    <textarea name="doubt" rows="4" placeholder="Describe your doubt clearly..." required></textarea>
     <button type="submit" class="submit-btn">Send ✉️</button>
   </form>
-  <div id="doubt-success">
-    ✅ Doubt sent! We'll reply on your email.
-  </div>
+  <div id="doubt-success">✅ Doubt sent! We'll reply on your email.</div>
   <span class="close-link" onclick="toggleDoubt()">✕ Close</span>
 </div>
 
