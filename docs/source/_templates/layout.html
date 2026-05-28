@@ -56,33 +56,30 @@
   html.theme-light .wy-menu-vertical a:hover {
     color: #ffffff !important;
     background: #1f6391 !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-light .wy-menu-vertical li.current > a,
   html.theme-light .wy-menu-vertical li.current > a:hover {
     color: #ffffff !important;
     background: #1a5276 !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
 
-  /* FIX 1 — sub-items (l2, l3, l4) text visible */
+  /* FIX 2 — sub-items (l2/l3/l4) sit on RTD's light-gray bg → dark text */
   html.theme-light .wy-menu-vertical li.toctree-l2 > a,
   html.theme-light .wy-menu-vertical li.toctree-l3 > a,
   html.theme-light .wy-menu-vertical li.toctree-l4 > a {
-    color: #ffffff !important;
-    background: rgba(0,0,0,0.10) !important;
+    color: #1e293b !important;
+    background: #e8f1f8 !important;
   }
   html.theme-light .wy-menu-vertical li.toctree-l2.current > a,
   html.theme-light .wy-menu-vertical li.toctree-l3.current > a {
-    background: #1a5276 !important;
-    color: #ffffff !important;
-    border-radius: 6px !important;  /* FIX 4 */
+    background: #c8dff0 !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
   }
   html.theme-light .wy-menu-vertical li.toctree-l2 a:hover,
   html.theme-light .wy-menu-vertical li.toctree-l3 a:hover {
     background: #1f6391 !important;
     color: #ffffff !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
 
   html.theme-light .rst-content p,
@@ -134,13 +131,11 @@
   html.theme-dark .wy-menu-vertical a:hover {
     color: #e2e8f0 !important;
     background: #1e293b !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.current > a,
   html.theme-dark .wy-menu-vertical li.current > a:hover {
     color: #f1f5f9 !important;
     background: #1e293b !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 > a,
   html.theme-dark .wy-menu-vertical li.toctree-l3 > a,
@@ -152,13 +147,11 @@
   html.theme-dark .wy-menu-vertical li.toctree-l3.current > a {
     background: #1e293b !important;
     color: #f1f5f9 !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 a:hover,
   html.theme-dark .wy-menu-vertical li.toctree-l3 a:hover {
     background: #1e293b !important;
     color: #e2e8f0 !important;
-    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .rst-content p,
   html.theme-dark .rst-content li,
@@ -213,22 +206,6 @@
   html.theme-dark #doubt-modal input::placeholder,
   html.theme-dark #doubt-modal textarea::placeholder { color: #475569 !important; }
   html.theme-dark #doubt-modal .close-link { color: #475569 !important; }
-
-  /* ══════════════════════════════════════════
-     FIX 4 — rounded active item (override RTD border-left line)
-  ══════════════════════════════════════════ */
-  .wy-menu-vertical li.current > a,
-  .wy-menu-vertical li.toctree-l2.current > a,
-  .wy-menu-vertical li.toctree-l3.current > a {
-    border-left: none !important;
-    border-radius: 6px !important;
-    margin: 1px 8px !important;
-    padding-left: 16px !important;
-  }
-  .wy-menu-vertical a {
-    border-radius: 6px !important;
-    margin: 1px 8px !important;
-  }
 
   /* ══════════════════════════════════════════
      SMOOTH TRANSITIONS
