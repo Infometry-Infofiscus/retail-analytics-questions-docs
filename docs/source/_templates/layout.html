@@ -40,12 +40,15 @@
     background: #d6e8f5 !important;
     color: #000000 !important;
   }
+  html.theme-light .wy-nav-top *,
   html.theme-light .wy-nav-top a,
   html.theme-light .wy-nav-top span,
   html.theme-light .wy-nav-top i,
   html.theme-light .wy-nav-top .fa,
   html.theme-light .wy-nav-top p,
-  html.theme-light .wy-nav-top strong {
+  html.theme-light .wy-nav-top strong,
+  html.theme-light .wy-nav-top a:link,
+  html.theme-light .wy-nav-top a:visited {
     color: #000000 !important;
   }
 
@@ -137,7 +140,7 @@
     color: #f1f5f9 !important;
     background: #1e293b !important;
   }
-  /* dark mode — nuke RTD's light-gray bg on expanded ul wrappers */
+  /* dark mode — subtle dark navy bg per child item, ul wrapper transparent */
   html.theme-dark .wy-menu-vertical li.toctree-l1.current > ul,
   html.theme-dark .wy-menu-vertical li.toctree-l2.current > ul,
   html.theme-dark .wy-menu-vertical li.toctree-l1 > ul,
@@ -148,13 +151,13 @@
   html.theme-dark .wy-menu-vertical li.toctree-l3 > a,
   html.theme-dark .wy-menu-vertical li.toctree-l4 > a {
     color: #94a3b8 !important;
-    background: transparent !important;
+    background: #0d1526 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2.current > a,
   html.theme-dark .wy-menu-vertical li.toctree-l3.current > a {
-    background: transparent !important;
+    background: #0d1526 !important;
     color: #f1f5f9 !important;
     border-radius: 0 !important;
   }
