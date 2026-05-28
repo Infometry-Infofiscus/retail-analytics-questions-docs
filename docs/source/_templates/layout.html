@@ -35,10 +35,10 @@
   }
   html.theme-light .wy-side-nav-search input::placeholder { color: #a9cce3 !important; }
 
-  /* nav top — bg from figure 3 reference, text clearly visible */
+  /* nav top — light bg, title text black */
   html.theme-light .wy-nav-top {
     background: #d6e8f5 !important;
-    color: #1a4a72 !important;
+    color: #000000 !important;
   }
   html.theme-light .wy-nav-top a,
   html.theme-light .wy-nav-top span,
@@ -46,7 +46,7 @@
   html.theme-light .wy-nav-top .fa,
   html.theme-light .wy-nav-top p,
   html.theme-light .wy-nav-top strong {
-    color: #1a4a72 !important;
+    color: #000000 !important;
   }
 
   /* FIX 1 & 2 — all sidebar links fully visible white */
@@ -136,6 +136,13 @@
   html.theme-dark .wy-menu-vertical li.current > a:hover {
     color: #f1f5f9 !important;
     background: #1e293b !important;
+  }
+  /* dark mode — nuke RTD's light-gray bg on expanded ul wrappers */
+  html.theme-dark .wy-menu-vertical li.toctree-l1.current > ul,
+  html.theme-dark .wy-menu-vertical li.toctree-l2.current > ul,
+  html.theme-dark .wy-menu-vertical li.toctree-l1 > ul,
+  html.theme-dark .wy-menu-vertical li.toctree-l2 > ul {
+    background: transparent !important;
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 > a,
   html.theme-dark .wy-menu-vertical li.toctree-l3 > a,
