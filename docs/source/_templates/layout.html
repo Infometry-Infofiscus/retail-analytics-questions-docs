@@ -2,7 +2,6 @@
 
 {% block extrahead %}
 {{ super() }}
-<!-- Apply theme INSTANTLY before render — prevents flash -->
 <script>
   (function() {
     var t = localStorage.getItem('rtd-theme') || 'light';
@@ -10,12 +9,11 @@
     document.documentElement.className = 'theme-' + t;
   })();
 </script>
-<!-- Lucide Icons CDN -->
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
 
   /* ══════════════════════════════════════════
-     LIGHT MODE — sidebar matches image 6 blue
+     LIGHT MODE
   ══════════════════════════════════════════ */
   html.theme-light body,
   html.theme-light .wy-body-for-nav,
@@ -36,29 +34,57 @@
     color: white !important;
   }
   html.theme-light .wy-side-nav-search input::placeholder { color: #a9cce3 !important; }
-  html.theme-light .wy-nav-top { background: #2980b9 !important; }
-  html.theme-light .wy-menu-vertical a { color: #d6eaf8 !important; }
-  html.theme-light .wy-menu-vertical a:hover { color: #ffffff !important; background: #1f6391 !important; }
+
+  /* FIX 3 — nav top text always white on blue */
+  html.theme-light .wy-nav-top {
+    background: #2980b9 !important;
+    color: #ffffff !important;
+  }
+  html.theme-light .wy-nav-top a,
+  html.theme-light .wy-nav-top span,
+  html.theme-light .wy-nav-top i,
+  html.theme-light .wy-nav-top .fa,
+  html.theme-light .wy-nav-top p,
+  html.theme-light .wy-nav-top strong {
+    color: #ffffff !important;
+  }
+
+  /* FIX 1 & 2 — all sidebar links fully visible white */
+  html.theme-light .wy-menu-vertical a {
+    color: #ffffff !important;
+  }
+  html.theme-light .wy-menu-vertical a:hover {
+    color: #ffffff !important;
+    background: #1f6391 !important;
+    border-radius: 6px !important;  /* FIX 4 */
+  }
   html.theme-light .wy-menu-vertical li.current > a,
   html.theme-light .wy-menu-vertical li.current > a:hover {
     color: #ffffff !important;
     background: #1a5276 !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
+
+  /* FIX 1 — sub-items (l2, l3, l4) text visible */
   html.theme-light .wy-menu-vertical li.toctree-l2 > a,
   html.theme-light .wy-menu-vertical li.toctree-l3 > a,
   html.theme-light .wy-menu-vertical li.toctree-l4 > a {
-    color: #d6eaf8 !important;
+    color: #ffffff !important;
+    background: rgba(0,0,0,0.10) !important;
   }
   html.theme-light .wy-menu-vertical li.toctree-l2.current > a,
   html.theme-light .wy-menu-vertical li.toctree-l3.current > a {
     background: #1a5276 !important;
     color: #ffffff !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-light .wy-menu-vertical li.toctree-l2 a:hover,
   html.theme-light .wy-menu-vertical li.toctree-l3 a:hover {
     background: #1f6391 !important;
     color: #ffffff !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
+
   html.theme-light .rst-content p,
   html.theme-light .rst-content li,
   html.theme-light .rst-content td,
@@ -72,7 +98,7 @@
   html.theme-light #theme-toggle:hover { background: #2980b9; color: white; }
 
   /* ══════════════════════════════════════════
-     DARK MODE — #0B111E deep navy
+     DARK MODE
   ══════════════════════════════════════════ */
   html.theme-dark body,
   html.theme-dark .wy-body-for-nav,
@@ -93,16 +119,28 @@
     color: #e2e8f0 !important;
   }
   html.theme-dark .wy-side-nav-search input::placeholder { color: #475569 !important; }
-  html.theme-dark .wy-nav-top { background: #0a0f1c !important; }
+  html.theme-dark .wy-nav-top {
+    background: #0a0f1c !important;
+    color: #e2e8f0 !important;
+  }
+  html.theme-dark .wy-nav-top a,
+  html.theme-dark .wy-nav-top span,
+  html.theme-dark .wy-nav-top i,
+  html.theme-dark .wy-nav-top p,
+  html.theme-dark .wy-nav-top strong {
+    color: #e2e8f0 !important;
+  }
   html.theme-dark .wy-menu-vertical a { color: #94a3b8 !important; }
   html.theme-dark .wy-menu-vertical a:hover {
     color: #e2e8f0 !important;
     background: #1e293b !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.current > a,
   html.theme-dark .wy-menu-vertical li.current > a:hover {
     color: #f1f5f9 !important;
     background: #1e293b !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 > a,
   html.theme-dark .wy-menu-vertical li.toctree-l3 > a,
@@ -114,11 +152,13 @@
   html.theme-dark .wy-menu-vertical li.toctree-l3.current > a {
     background: #1e293b !important;
     color: #f1f5f9 !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 a:hover,
   html.theme-dark .wy-menu-vertical li.toctree-l3 a:hover {
     background: #1e293b !important;
     color: #e2e8f0 !important;
+    border-radius: 6px !important;  /* FIX 4 */
   }
   html.theme-dark .rst-content p,
   html.theme-dark .rst-content li,
@@ -175,7 +215,23 @@
   html.theme-dark #doubt-modal .close-link { color: #475569 !important; }
 
   /* ══════════════════════════════════════════
-     SMOOTH TRANSITIONS (all elements)
+     FIX 4 — rounded active item (override RTD border-left line)
+  ══════════════════════════════════════════ */
+  .wy-menu-vertical li.current > a,
+  .wy-menu-vertical li.toctree-l2.current > a,
+  .wy-menu-vertical li.toctree-l3.current > a {
+    border-left: none !important;
+    border-radius: 6px !important;
+    margin: 1px 8px !important;
+    padding-left: 16px !important;
+  }
+  .wy-menu-vertical a {
+    border-radius: 6px !important;
+    margin: 1px 8px !important;
+  }
+
+  /* ══════════════════════════════════════════
+     SMOOTH TRANSITIONS
   ══════════════════════════════════════════ */
   *, *::before, *::after {
     transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
@@ -322,21 +378,17 @@
 </div>
 
 <script>
-  /* Init Lucide */
   lucide.createIcons();
 
-  /* Page inject */
   var page = window.location.pathname;
   document.getElementById('page-label').innerText = page;
   document.getElementById('page-input').value = page;
 
-  /* Doubt toggle */
   function toggleDoubt() {
     var modal = document.getElementById('doubt-modal');
     modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
   }
 
-  /* Doubt submit */
   document.getElementById('doubt-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = this;
@@ -358,7 +410,6 @@
     });
   });
 
-  /* Theme — sync button label with current state */
   function syncToggleUI(theme) {
     var icon = document.getElementById('theme-icon');
     var label = document.getElementById('theme-label');
@@ -373,7 +424,6 @@
   }
 
   function applyTheme(theme) {
-    /* Apply to BOTH html and body for full coverage */
     document.documentElement.className = 'theme-' + theme;
     document.documentElement.setAttribute('data-theme', theme);
     document.body.className = document.body.className
@@ -387,7 +437,6 @@
     applyTheme(current === 'dark' ? 'light' : 'dark');
   }
 
-  /* On every page load — read saved preference and apply */
   var saved = localStorage.getItem('rtd-theme') || 'light';
   applyTheme(saved);
 </script>
