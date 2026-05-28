@@ -2,44 +2,210 @@
 
 {% block extrahead %}
 {{ super() }}
-<!-- Lucide Icons CDN - industry standard SVG icon library -->
+<!-- Apply theme INSTANTLY before render — prevents flash -->
+<script>
+  (function() {
+    var t = localStorage.getItem('rtd-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.className = 'theme-' + t;
+  })();
+</script>
+<!-- Lucide Icons CDN -->
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
-  /* ══════════════════════════════════
+
+  /* ══════════════════════════════════════════
+     LIGHT MODE — sidebar matches image 6 blue
+  ══════════════════════════════════════════ */
+  html.theme-light body,
+  html.theme-light .wy-body-for-nav,
+  html.theme-light .wy-nav-content-wrap,
+  html.theme-light .wy-nav-content {
+    background-color: #F8FAFC !important;
+    color: #1e293b !important;
+  }
+  html.theme-light .wy-nav-side {
+    background: #2980b9 !important;
+  }
+  html.theme-light .wy-side-nav-search {
+    background: #1f6391 !important;
+  }
+  html.theme-light .wy-side-nav-search input[type=text] {
+    border-color: #1a5276 !important;
+    background: #1a5276 !important;
+    color: white !important;
+  }
+  html.theme-light .wy-side-nav-search input::placeholder { color: #a9cce3 !important; }
+  html.theme-light .wy-nav-top { background: #2980b9 !important; }
+  html.theme-light .wy-menu-vertical a { color: #d6eaf8 !important; }
+  html.theme-light .wy-menu-vertical a:hover { color: #ffffff !important; background: #1f6391 !important; }
+  html.theme-light .wy-menu-vertical li.current > a,
+  html.theme-light .wy-menu-vertical li.current > a:hover {
+    color: #ffffff !important;
+    background: #1a5276 !important;
+  }
+  html.theme-light .wy-menu-vertical li.toctree-l2 > a,
+  html.theme-light .wy-menu-vertical li.toctree-l3 > a,
+  html.theme-light .wy-menu-vertical li.toctree-l4 > a {
+    color: #d6eaf8 !important;
+  }
+  html.theme-light .wy-menu-vertical li.toctree-l2.current > a,
+  html.theme-light .wy-menu-vertical li.toctree-l3.current > a {
+    background: #1a5276 !important;
+    color: #ffffff !important;
+  }
+  html.theme-light .wy-menu-vertical li.toctree-l2 a:hover,
+  html.theme-light .wy-menu-vertical li.toctree-l3 a:hover {
+    background: #1f6391 !important;
+    color: #ffffff !important;
+  }
+  html.theme-light .rst-content p,
+  html.theme-light .rst-content li,
+  html.theme-light .rst-content td,
+  html.theme-light .rst-content th { color: #1e293b !important; }
+  html.theme-light .rst-content h1,
+  html.theme-light .rst-content h2,
+  html.theme-light .rst-content h3,
+  html.theme-light .rst-content h4 { color: #0f172a !important; }
+  html.theme-light a { color: #2980b9 !important; }
+  html.theme-light #theme-toggle { border-color: #2980b9; color: #2980b9; }
+  html.theme-light #theme-toggle:hover { background: #2980b9; color: white; }
+
+  /* ══════════════════════════════════════════
+     DARK MODE — #0B111E deep navy
+  ══════════════════════════════════════════ */
+  html.theme-dark body,
+  html.theme-dark .wy-body-for-nav,
+  html.theme-dark .wy-nav-content-wrap,
+  html.theme-dark .wy-nav-content {
+    background-color: #0B111E !important;
+    color: #e2e8f0 !important;
+  }
+  html.theme-dark .wy-nav-side {
+    background: #0f172a !important;
+  }
+  html.theme-dark .wy-side-nav-search {
+    background: #0a0f1c !important;
+  }
+  html.theme-dark .wy-side-nav-search input[type=text] {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+  }
+  html.theme-dark .wy-side-nav-search input::placeholder { color: #475569 !important; }
+  html.theme-dark .wy-nav-top { background: #0a0f1c !important; }
+  html.theme-dark .wy-menu-vertical a { color: #94a3b8 !important; }
+  html.theme-dark .wy-menu-vertical a:hover {
+    color: #e2e8f0 !important;
+    background: #1e293b !important;
+  }
+  html.theme-dark .wy-menu-vertical li.current > a,
+  html.theme-dark .wy-menu-vertical li.current > a:hover {
+    color: #f1f5f9 !important;
+    background: #1e293b !important;
+  }
+  html.theme-dark .wy-menu-vertical li.toctree-l2 > a,
+  html.theme-dark .wy-menu-vertical li.toctree-l3 > a,
+  html.theme-dark .wy-menu-vertical li.toctree-l4 > a {
+    color: #94a3b8 !important;
+    background: #0d1526 !important;
+  }
+  html.theme-dark .wy-menu-vertical li.toctree-l2.current > a,
+  html.theme-dark .wy-menu-vertical li.toctree-l3.current > a {
+    background: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+  html.theme-dark .wy-menu-vertical li.toctree-l2 a:hover,
+  html.theme-dark .wy-menu-vertical li.toctree-l3 a:hover {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  html.theme-dark .rst-content p,
+  html.theme-dark .rst-content li,
+  html.theme-dark .rst-content td,
+  html.theme-dark .rst-content th,
+  html.theme-dark .rst-content span { color: #cbd5e1 !important; }
+  html.theme-dark .rst-content h1,
+  html.theme-dark .rst-content h2,
+  html.theme-dark .rst-content h3,
+  html.theme-dark .rst-content h4 { color: #f1f5f9 !important; }
+  html.theme-dark a { color: #60a5fa !important; }
+  html.theme-dark a:hover { color: #93c5fd !important; }
+  html.theme-dark .rst-content code,
+  html.theme-dark .rst-content tt {
+    background: #1e293b !important;
+    color: #7dd3fc !important;
+    border: 1px solid #334155 !important;
+  }
+  html.theme-dark .highlight {
+    background: #0f172a !important;
+    border: 1px solid #1e293b !important;
+  }
+  html.theme-dark .highlight pre { color: #e2e8f0 !important; }
+  html.theme-dark table.docutils { background: #0f172a !important; border-color: #1e293b !important; }
+  html.theme-dark table.docutils td,
+  html.theme-dark table.docutils th {
+    border-color: #1e293b !important;
+    background: #0f172a !important;
+    color: #cbd5e1 !important;
+  }
+  html.theme-dark table.docutils tr:nth-child(even) td { background: #111827 !important; }
+  html.theme-dark .admonition { background: #1e293b !important; }
+  html.theme-dark .admonition-title { background: #2980b9 !important; }
+  html.theme-dark .admonition p { color: #cbd5e1 !important; }
+  html.theme-dark footer,
+  html.theme-dark .rst-footer-buttons { color: #475569 !important; }
+  html.theme-dark #theme-toggle { border-color: #60a5fa; color: #60a5fa; }
+  html.theme-dark #theme-toggle:hover { background: #60a5fa; color: #0B111E; }
+  html.theme-dark #doubt-modal {
+    background: #1e293b !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  html.theme-dark #doubt-modal h4 { color: #60a5fa !important; }
+  html.theme-dark #doubt-modal .modal-header svg { stroke: #60a5fa !important; }
+  html.theme-dark #doubt-modal .page-tag { color: #64748b !important; }
+  html.theme-dark #doubt-modal input,
+  html.theme-dark #doubt-modal textarea {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+  }
+  html.theme-dark #doubt-modal input::placeholder,
+  html.theme-dark #doubt-modal textarea::placeholder { color: #475569 !important; }
+  html.theme-dark #doubt-modal .close-link { color: #475569 !important; }
+
+  /* ══════════════════════════════════════════
+     SMOOTH TRANSITIONS (all elements)
+  ══════════════════════════════════════════ */
+  *, *::before, *::after {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
+  }
+
+  /* ══════════════════════════════════════════
      THEME TOGGLE BUTTON
-  ══════════════════════════════════ */
+  ══════════════════════════════════════════ */
   #theme-toggle {
     position: fixed;
     top: 14px;
     right: 16px;
     z-index: 99999;
     background: transparent;
-    border: 1.5px solid #2980b9;
+    border: 1.5px solid;
     border-radius: 50px;
     padding: 6px 14px;
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
-    color: #2980b9;
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s ease;
     letter-spacing: 0.3px;
   }
-  #theme-toggle:hover {
-    background: #2980b9;
-    color: white;
-  }
-  #theme-toggle svg {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2;
-  }
+  #theme-toggle svg { width: 14px; height: 14px; stroke-width: 2; }
 
-  /* ══════════════════════════════════
-     DOUBT BUTTON (floating)
-  ══════════════════════════════════ */
+  /* ══════════════════════════════════════════
+     DOUBT BUTTON
+  ══════════════════════════════════════════ */
   #doubt-btn {
     position: fixed;
     bottom: 24px;
@@ -57,16 +223,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: background 0.2s ease;
   }
   #doubt-btn:hover { background: #1f6391; }
-  #doubt-btn svg {
-    width: 16px; height: 16px; stroke-width: 2;
-  }
+  #doubt-btn svg { width: 16px; height: 16px; stroke-width: 2; }
 
-  /* ══════════════════════════════════
+  /* ══════════════════════════════════════════
      DOUBT MODAL
-  ══════════════════════════════════ */
+  ══════════════════════════════════════════ */
   #doubt-modal {
     display: none;
     position: fixed;
@@ -80,240 +243,57 @@
     z-index: 9999;
     font-family: sans-serif;
   }
-  #doubt-modal .modal-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  #doubt-modal .modal-header svg {
-    width: 18px; height: 18px;
-    stroke: #2980b9; stroke-width: 2;
-  }
-  #doubt-modal h4 {
-    margin: 0;
-    color: #2980b9;
-    font-size: 15px;
-  }
-  #doubt-modal .page-tag {
-    font-size: 11px;
-    color: #888;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  #doubt-modal .page-tag svg {
-    width: 11px; height: 11px;
-    stroke: #888; stroke-width: 2;
-  }
+  #doubt-modal .modal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  #doubt-modal .modal-header svg { width: 18px; height: 18px; stroke: #2980b9; stroke-width: 2; }
+  #doubt-modal h4 { margin: 0; color: #2980b9; font-size: 15px; }
+  #doubt-modal .page-tag { font-size: 11px; color: #888; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+  #doubt-modal .page-tag svg { width: 11px; height: 11px; stroke: #888; stroke-width: 2; }
   #doubt-modal input,
   #doubt-modal textarea {
-    width: 100%;
-    padding: 8px 10px;
-    margin: 6px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 13px;
-    box-sizing: border-box;
-    outline: none;
-    transition: border 0.2s;
+    width: 100%; padding: 8px 10px; margin: 6px 0;
+    border: 1px solid #ddd; border-radius: 8px;
+    font-size: 13px; box-sizing: border-box; outline: none;
   }
   #doubt-modal input:focus,
-  #doubt-modal textarea:focus {
-    border-color: #2980b9;
-  }
+  #doubt-modal textarea:focus { border-color: #2980b9; }
   #doubt-modal textarea { resize: vertical; }
   #doubt-modal .submit-btn {
-    background: #2980b9;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.2s;
+    background: #2980b9; color: white; border: none;
+    padding: 10px; width: 100%; border-radius: 8px;
+    cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   #doubt-modal .submit-btn:hover { background: #1f6391; }
-  #doubt-modal .submit-btn svg {
-    width: 15px; height: 15px; stroke-width: 2;
-  }
+  #doubt-modal .submit-btn svg { width: 15px; height: 15px; stroke-width: 2; }
   #doubt-modal .close-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 10px;
-    font-size: 12px;
-    color: #aaa;
-    cursor: pointer;
-    transition: color 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; margin-top: 10px; font-size: 12px; color: #aaa; cursor: pointer;
   }
-  #doubt-modal .close-link:hover { color: #666; }
-  #doubt-modal .close-link svg {
-    width: 12px; height: 12px; stroke-width: 2;
-  }
+  #doubt-modal .close-link svg { width: 12px; height: 12px; stroke-width: 2; }
   #doubt-success {
-    display: none;
-    text-align: center;
-    padding: 20px 10px;
-    color: #27ae60;
-    font-weight: bold;
-    font-size: 14px;
+    display: none; text-align: center; padding: 20px 10px;
+    color: #27ae60; font-weight: bold; font-size: 14px;
   }
-  #doubt-success svg {
-    width: 36px; height: 36px;
-    stroke: #27ae60; stroke-width: 2;
-    display: block; margin: 0 auto 10px;
-  }
-
-  /* ══════════════════════════════════
-     LIGHT MODE (default) — #F8FAFC
-  ══════════════════════════════════ */
-  body.theme-light .wy-body-for-nav,
-  body.theme-light .wy-nav-content-wrap,
-  body.theme-light .wy-nav-content {
-    background-color: #F8FAFC !important;
-  }
-  body.theme-light .wy-nav-side,
-  body.theme-light .wy-side-nav-search {
-    background: #e2e8f0 !important;
-  }
-  body.theme-light .wy-menu-vertical a { color: #1e293b !important; }
-  body.theme-light .rst-content p,
-  body.theme-light .rst-content li,
-  body.theme-light .rst-content td { color: #1e293b !important; }
-
-  /* ══════════════════════════════════
-     DARK MODE — #0B111E
-  ══════════════════════════════════ */
-  body.theme-dark .wy-body-for-nav,
-  body.theme-dark .wy-nav-content-wrap,
-  body.theme-dark .wy-nav-content {
-    background-color: #0B111E !important;
-    color: #e2e8f0 !important;
-  }
-  body.theme-dark .wy-nav-side,
-  body.theme-dark .wy-side-nav-search {
-    background: #0f172a !important;
-  }
-  body.theme-dark .wy-nav-top {
-    background: #0f172a !important;
-  }
-  body.theme-dark .wy-menu-vertical a {
-    color: #94a3b8 !important;
-  }
-  body.theme-dark .wy-menu-vertical a:hover,
-  body.theme-dark .wy-menu-vertical li.current > a {
-    color: #e2e8f0 !important;
-    background: #1e293b !important;
-  }
-  body.theme-dark .rst-content p,
-  body.theme-dark .rst-content li,
-  body.theme-dark .rst-content td,
-  body.theme-dark .rst-content th,
-  body.theme-dark .rst-content span { color: #cbd5e1 !important; }
-  body.theme-dark .rst-content h1,
-  body.theme-dark .rst-content h2,
-  body.theme-dark .rst-content h3,
-  body.theme-dark .rst-content h4 { color: #f1f5f9 !important; }
-  body.theme-dark a { color: #60a5fa !important; }
-  body.theme-dark a:hover { color: #93c5fd !important; }
-  body.theme-dark .rst-content code,
-  body.theme-dark .rst-content tt {
-    background: #1e293b !important;
-    color: #7dd3fc !important;
-    border: 1px solid #334155 !important;
-  }
-  body.theme-dark .highlight {
-    background: #0f172a !important;
-    border: 1px solid #1e293b !important;
-  }
-  body.theme-dark .highlight pre { color: #e2e8f0 !important; }
-  body.theme-dark table.docutils {
-    background: #0f172a !important;
-    border-color: #1e293b !important;
-  }
-  body.theme-dark table.docutils td,
-  body.theme-dark table.docutils th {
-    border-color: #1e293b !important;
-    background: #0f172a !important;
-    color: #cbd5e1 !important;
-  }
-  body.theme-dark table.docutils tr:nth-child(even) td {
-    background: #111827 !important;
-  }
-  body.theme-dark .admonition { background: #1e293b !important; }
-  body.theme-dark .admonition-title { background: #2980b9 !important; }
-  body.theme-dark .admonition p { color: #cbd5e1 !important; }
-  body.theme-dark footer { color: #475569 !important; }
-  body.theme-dark .rst-content .section { color: #cbd5e1 !important; }
-
-  /* dark modal */
-  body.theme-dark #doubt-modal {
-    background: #1e293b !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
-  body.theme-dark #doubt-modal h4 { color: #60a5fa !important; }
-  body.theme-dark #doubt-modal .modal-header svg { stroke: #60a5fa !important; }
-  body.theme-dark #doubt-modal .page-tag { color: #64748b !important; }
-  body.theme-dark #doubt-modal .page-tag svg { stroke: #64748b !important; }
-  body.theme-dark #doubt-modal input,
-  body.theme-dark #doubt-modal textarea {
-    background: #0f172a !important;
-    color: #e2e8f0 !important;
-    border-color: #334155 !important;
-  }
-  body.theme-dark #doubt-modal input::placeholder,
-  body.theme-dark #doubt-modal textarea::placeholder { color: #475569 !important; }
-  body.theme-dark #doubt-modal .close-link { color: #475569 !important; }
-  body.theme-dark #doubt-modal .close-link:hover { color: #94a3b8 !important; }
-
-  /* toggle button in dark */
-  body.theme-dark #theme-toggle {
-    border-color: #60a5fa;
-    color: #60a5fa;
-  }
-  body.theme-dark #theme-toggle:hover {
-    background: #60a5fa;
-    color: #0B111E;
-  }
-
-  /* ══════════════════════════════════
-     TRANSITIONS
-  ══════════════════════════════════ */
-  body, .wy-nav-content, .wy-nav-content-wrap,
-  .wy-nav-side, .wy-body-for-nav, .wy-nav-top,
-  .rst-content p, .rst-content h1, .rst-content h2,
-  table.docutils, .highlight {
-    transition: background-color 0.3s ease, color 0.3s ease !important;
-  }
+  #doubt-success svg { width: 36px; height: 36px; stroke: #27ae60; stroke-width: 2; display: block; margin: 0 auto 10px; }
 </style>
 {% endblock %}
 
 {% block footer %}
 {{ super() }}
 
-<!-- ── THEME TOGGLE ── -->
+<!-- THEME TOGGLE -->
 <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
   <i data-lucide="moon" id="theme-icon"></i>
   <span id="theme-label">Dark</span>
 </button>
 
-<!-- ── FLOATING DOUBT BUTTON ── -->
+<!-- FLOATING DOUBT BUTTON -->
 <button id="doubt-btn" onclick="toggleDoubt()" title="Have a doubt?">
   <i data-lucide="message-circle-question"></i>
   Have a Doubt?
 </button>
 
-<!-- ── DOUBT MODAL ── -->
+<!-- DOUBT MODAL -->
 <div id="doubt-modal">
   <div class="modal-header">
     <i data-lucide="mail-question"></i>
@@ -323,7 +303,6 @@
     <i data-lucide="file-text"></i>
     <span id="page-label"></span>
   </div>
-
   <form id="doubt-form" action="https://formspree.io/f/xnjrorkj" method="POST">
     <input type="hidden" name="page" id="page-input" />
     <input type="text"  name="name"  placeholder="Your Name"  required />
@@ -333,33 +312,31 @@
       <i data-lucide="send"></i> Send
     </button>
   </form>
-
   <div id="doubt-success">
     <i data-lucide="circle-check-big"></i>
     Doubt sent! We'll reply on your email.
   </div>
-
   <div class="close-link" onclick="toggleDoubt()">
     <i data-lucide="x"></i> Close
   </div>
 </div>
 
 <script>
-  /* ── Init Lucide Icons ── */
+  /* Init Lucide */
   lucide.createIcons();
 
-  /* ── Page inject ── */
+  /* Page inject */
   var page = window.location.pathname;
   document.getElementById('page-label').innerText = page;
   document.getElementById('page-input').value = page;
 
-  /* ── Doubt toggle ── */
+  /* Doubt toggle */
   function toggleDoubt() {
     var modal = document.getElementById('doubt-modal');
     modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
   }
 
-  /* ── Doubt submit ── */
+  /* Doubt submit */
   document.getElementById('doubt-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = this;
@@ -381,11 +358,8 @@
     });
   });
 
-  /* ── Theme toggle ── */
-  function applyTheme(theme) {
-    document.body.classList.remove('theme-light', 'theme-dark');
-    document.body.classList.add('theme-' + theme);
-    localStorage.setItem('rtd-theme', theme);
+  /* Theme — sync button label with current state */
+  function syncToggleUI(theme) {
     var icon = document.getElementById('theme-icon');
     var label = document.getElementById('theme-label');
     if (theme === 'dark') {
@@ -398,12 +372,22 @@
     lucide.createIcons();
   }
 
+  function applyTheme(theme) {
+    /* Apply to BOTH html and body for full coverage */
+    document.documentElement.className = 'theme-' + theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.className = document.body.className
+      .replace(/theme-\w+/g, '').trim() + ' theme-' + theme;
+    localStorage.setItem('rtd-theme', theme);
+    syncToggleUI(theme);
+  }
+
   function toggleTheme() {
     var current = localStorage.getItem('rtd-theme') || 'light';
     applyTheme(current === 'dark' ? 'light' : 'dark');
   }
 
-  /* Load saved preference on every page */
+  /* On every page load — read saved preference and apply */
   var saved = localStorage.getItem('rtd-theme') || 'light';
   applyTheme(saved);
 </script>
