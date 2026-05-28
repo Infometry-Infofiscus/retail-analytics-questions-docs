@@ -2,7 +2,44 @@
 
 {% block extrahead %}
 {{ super() }}
+<!-- Lucide Icons CDN - industry standard SVG icon library -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
+  /* ══════════════════════════════════
+     THEME TOGGLE BUTTON
+  ══════════════════════════════════ */
+  #theme-toggle {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 99999;
+    background: transparent;
+    border: 1.5px solid #2980b9;
+    border-radius: 50px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2980b9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+  #theme-toggle:hover {
+    background: #2980b9;
+    color: white;
+  }
+  #theme-toggle svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+  }
+
+  /* ══════════════════════════════════
+     DOUBT BUTTON (floating)
+  ══════════════════════════════════ */
   #doubt-btn {
     position: fixed;
     bottom: 24px;
@@ -15,9 +52,21 @@
     font-size: 14px;
     font-weight: bold;
     z-index: 9999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(41,128,185,0.4);
     border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s ease;
   }
+  #doubt-btn:hover { background: #1f6391; }
+  #doubt-btn svg {
+    width: 16px; height: 16px; stroke-width: 2;
+  }
+
+  /* ══════════════════════════════════
+     DOUBT MODAL
+  ══════════════════════════════════ */
   #doubt-modal {
     display: none;
     position: fixed;
@@ -25,33 +74,226 @@
     right: 24px;
     background: white;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
     width: 320px;
     z-index: 9999;
     font-family: sans-serif;
   }
-  #doubt-modal h4 { margin: 0 0 4px 0; color: #2980b9; }
-  #doubt-modal .page-tag { font-size: 11px; color: #888; margin-bottom: 12px; }
-  #doubt-modal input, #doubt-modal textarea {
-    width: 100%; padding: 8px 10px; margin: 6px 0;
-    border: 1px solid #ddd; border-radius: 6px;
-    font-size: 13px; box-sizing: border-box;
+  #doubt-modal .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  #doubt-modal .modal-header svg {
+    width: 18px; height: 18px;
+    stroke: #2980b9; stroke-width: 2;
+  }
+  #doubt-modal h4 {
+    margin: 0;
+    color: #2980b9;
+    font-size: 15px;
+  }
+  #doubt-modal .page-tag {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  #doubt-modal .page-tag svg {
+    width: 11px; height: 11px;
+    stroke: #888; stroke-width: 2;
+  }
+  #doubt-modal input,
+  #doubt-modal textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 6px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.2s;
+  }
+  #doubt-modal input:focus,
+  #doubt-modal textarea:focus {
+    border-color: #2980b9;
   }
   #doubt-modal textarea { resize: vertical; }
   #doubt-modal .submit-btn {
-    background: #2980b9; color: white; border: none;
-    padding: 10px; width: 100%; border-radius: 6px;
-    cursor: pointer; font-size: 14px; margin-top: 6px;
+    background: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
   }
   #doubt-modal .submit-btn:hover { background: #1f6391; }
+  #doubt-modal .submit-btn svg {
+    width: 15px; height: 15px; stroke-width: 2;
+  }
   #doubt-modal .close-link {
-    display: block; text-align: center; margin-top: 8px;
-    font-size: 12px; color: #aaa; cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  #doubt-modal .close-link:hover { color: #666; }
+  #doubt-modal .close-link svg {
+    width: 12px; height: 12px; stroke-width: 2;
   }
   #doubt-success {
-    display: none; text-align: center; padding: 20px;
-    color: #27ae60; font-weight: bold;
+    display: none;
+    text-align: center;
+    padding: 20px 10px;
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  #doubt-success svg {
+    width: 36px; height: 36px;
+    stroke: #27ae60; stroke-width: 2;
+    display: block; margin: 0 auto 10px;
+  }
+
+  /* ══════════════════════════════════
+     LIGHT MODE (default) — #F8FAFC
+  ══════════════════════════════════ */
+  body.theme-light .wy-body-for-nav,
+  body.theme-light .wy-nav-content-wrap,
+  body.theme-light .wy-nav-content {
+    background-color: #F8FAFC !important;
+  }
+  body.theme-light .wy-nav-side,
+  body.theme-light .wy-side-nav-search {
+    background: #e2e8f0 !important;
+  }
+  body.theme-light .wy-menu-vertical a { color: #1e293b !important; }
+  body.theme-light .rst-content p,
+  body.theme-light .rst-content li,
+  body.theme-light .rst-content td { color: #1e293b !important; }
+
+  /* ══════════════════════════════════
+     DARK MODE — #0B111E
+  ══════════════════════════════════ */
+  body.theme-dark .wy-body-for-nav,
+  body.theme-dark .wy-nav-content-wrap,
+  body.theme-dark .wy-nav-content {
+    background-color: #0B111E !important;
+    color: #e2e8f0 !important;
+  }
+  body.theme-dark .wy-nav-side,
+  body.theme-dark .wy-side-nav-search {
+    background: #0f172a !important;
+  }
+  body.theme-dark .wy-nav-top {
+    background: #0f172a !important;
+  }
+  body.theme-dark .wy-menu-vertical a {
+    color: #94a3b8 !important;
+  }
+  body.theme-dark .wy-menu-vertical a:hover,
+  body.theme-dark .wy-menu-vertical li.current > a {
+    color: #e2e8f0 !important;
+    background: #1e293b !important;
+  }
+  body.theme-dark .rst-content p,
+  body.theme-dark .rst-content li,
+  body.theme-dark .rst-content td,
+  body.theme-dark .rst-content th,
+  body.theme-dark .rst-content span { color: #cbd5e1 !important; }
+  body.theme-dark .rst-content h1,
+  body.theme-dark .rst-content h2,
+  body.theme-dark .rst-content h3,
+  body.theme-dark .rst-content h4 { color: #f1f5f9 !important; }
+  body.theme-dark a { color: #60a5fa !important; }
+  body.theme-dark a:hover { color: #93c5fd !important; }
+  body.theme-dark .rst-content code,
+  body.theme-dark .rst-content tt {
+    background: #1e293b !important;
+    color: #7dd3fc !important;
+    border: 1px solid #334155 !important;
+  }
+  body.theme-dark .highlight {
+    background: #0f172a !important;
+    border: 1px solid #1e293b !important;
+  }
+  body.theme-dark .highlight pre { color: #e2e8f0 !important; }
+  body.theme-dark table.docutils {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+  }
+  body.theme-dark table.docutils td,
+  body.theme-dark table.docutils th {
+    border-color: #1e293b !important;
+    background: #0f172a !important;
+    color: #cbd5e1 !important;
+  }
+  body.theme-dark table.docutils tr:nth-child(even) td {
+    background: #111827 !important;
+  }
+  body.theme-dark .admonition { background: #1e293b !important; }
+  body.theme-dark .admonition-title { background: #2980b9 !important; }
+  body.theme-dark .admonition p { color: #cbd5e1 !important; }
+  body.theme-dark footer { color: #475569 !important; }
+  body.theme-dark .rst-content .section { color: #cbd5e1 !important; }
+
+  /* dark modal */
+  body.theme-dark #doubt-modal {
+    background: #1e293b !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  body.theme-dark #doubt-modal h4 { color: #60a5fa !important; }
+  body.theme-dark #doubt-modal .modal-header svg { stroke: #60a5fa !important; }
+  body.theme-dark #doubt-modal .page-tag { color: #64748b !important; }
+  body.theme-dark #doubt-modal .page-tag svg { stroke: #64748b !important; }
+  body.theme-dark #doubt-modal input,
+  body.theme-dark #doubt-modal textarea {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+  }
+  body.theme-dark #doubt-modal input::placeholder,
+  body.theme-dark #doubt-modal textarea::placeholder { color: #475569 !important; }
+  body.theme-dark #doubt-modal .close-link { color: #475569 !important; }
+  body.theme-dark #doubt-modal .close-link:hover { color: #94a3b8 !important; }
+
+  /* toggle button in dark */
+  body.theme-dark #theme-toggle {
+    border-color: #60a5fa;
+    color: #60a5fa;
+  }
+  body.theme-dark #theme-toggle:hover {
+    background: #60a5fa;
+    color: #0B111E;
+  }
+
+  /* ══════════════════════════════════
+     TRANSITIONS
+  ══════════════════════════════════ */
+  body, .wy-nav-content, .wy-nav-content-wrap,
+  .wy-nav-side, .wy-body-for-nav, .wy-nav-top,
+  .rst-content p, .rst-content h1, .rst-content h2,
+  table.docutils, .highlight {
+    transition: background-color 0.3s ease, color 0.3s ease !important;
   }
 </style>
 {% endblock %}
@@ -59,32 +301,65 @@
 {% block footer %}
 {{ super() }}
 
-<button id="doubt-btn" onclick="toggleDoubt()">💬 Have a Doubt?</button>
+<!-- ── THEME TOGGLE ── -->
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+  <i data-lucide="moon" id="theme-icon"></i>
+  <span id="theme-label">Dark</span>
+</button>
 
+<!-- ── FLOATING DOUBT BUTTON ── -->
+<button id="doubt-btn" onclick="toggleDoubt()" title="Have a doubt?">
+  <i data-lucide="message-circle-question"></i>
+  Have a Doubt?
+</button>
+
+<!-- ── DOUBT MODAL ── -->
 <div id="doubt-modal">
-  <h4>📩 Ask Your Doubt</h4>
-  <div class="page-tag" id="page-label"></div>
+  <div class="modal-header">
+    <i data-lucide="mail-question"></i>
+    <h4>Ask Your Doubt</h4>
+  </div>
+  <div class="page-tag">
+    <i data-lucide="file-text"></i>
+    <span id="page-label"></span>
+  </div>
+
   <form id="doubt-form" action="https://formspree.io/f/xnjrorkj" method="POST">
     <input type="hidden" name="page" id="page-input" />
-    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="text"  name="name"  placeholder="Your Name"  required />
     <input type="email" name="email" placeholder="Your Email" required />
     <textarea name="doubt" rows="4" placeholder="Describe your doubt clearly..." required></textarea>
-    <button type="submit" class="submit-btn">Send ✉️</button>
+    <button type="submit" class="submit-btn">
+      <i data-lucide="send"></i> Send
+    </button>
   </form>
-  <div id="doubt-success">✅ Doubt sent! We'll reply on your email.</div>
-  <span class="close-link" onclick="toggleDoubt()">✕ Close</span>
+
+  <div id="doubt-success">
+    <i data-lucide="circle-check-big"></i>
+    Doubt sent! We'll reply on your email.
+  </div>
+
+  <div class="close-link" onclick="toggleDoubt()">
+    <i data-lucide="x"></i> Close
+  </div>
 </div>
 
 <script>
+  /* ── Init Lucide Icons ── */
+  lucide.createIcons();
+
+  /* ── Page inject ── */
   var page = window.location.pathname;
-  document.getElementById('page-label').innerText = '📄 ' + page;
+  document.getElementById('page-label').innerText = page;
   document.getElementById('page-input').value = page;
 
+  /* ── Doubt toggle ── */
   function toggleDoubt() {
     var modal = document.getElementById('doubt-modal');
     modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
   }
 
+  /* ── Doubt submit ── */
   document.getElementById('doubt-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var form = this;
@@ -105,5 +380,31 @@
       }
     });
   });
+
+  /* ── Theme toggle ── */
+  function applyTheme(theme) {
+    document.body.classList.remove('theme-light', 'theme-dark');
+    document.body.classList.add('theme-' + theme);
+    localStorage.setItem('rtd-theme', theme);
+    var icon = document.getElementById('theme-icon');
+    var label = document.getElementById('theme-label');
+    if (theme === 'dark') {
+      icon.setAttribute('data-lucide', 'sun');
+      label.innerText = 'Light';
+    } else {
+      icon.setAttribute('data-lucide', 'moon');
+      label.innerText = 'Dark';
+    }
+    lucide.createIcons();
+  }
+
+  function toggleTheme() {
+    var current = localStorage.getItem('rtd-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  /* Load saved preference on every page */
+  var saved = localStorage.getItem('rtd-theme') || 'light';
+  applyTheme(saved);
 </script>
 {% endblock %}
