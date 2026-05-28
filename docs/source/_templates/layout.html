@@ -35,10 +35,10 @@
   }
   html.theme-light .wy-side-nav-search input::placeholder { color: #a9cce3 !important; }
 
-  /* nav top — light bg, title text black */
+  /* nav top — same blue as sidebar, white text like image 2 */
   html.theme-light .wy-nav-top {
-    background: #d6e8f5 !important;
-    color: #000000 !important;
+    background: #2980b9 !important;
+    color: #ffffff !important;
   }
   html.theme-light .wy-nav-top *,
   html.theme-light .wy-nav-top a,
@@ -49,7 +49,7 @@
   html.theme-light .wy-nav-top strong,
   html.theme-light .wy-nav-top a:link,
   html.theme-light .wy-nav-top a:visited {
-    color: #000000 !important;
+    color: #ffffff !important;
   }
 
   /* FIX 1 & 2 — all sidebar links fully visible white */
@@ -140,11 +140,13 @@
     color: #f1f5f9 !important;
     background: #1e293b !important;
   }
-  /* dark mode — subtle dark navy bg per child item, ul wrapper transparent */
+  /* dark mode — kill RTD white/gray bg on ALL ul containers */
+  html.theme-dark .wy-menu-vertical ul,
   html.theme-dark .wy-menu-vertical li.toctree-l1.current > ul,
   html.theme-dark .wy-menu-vertical li.toctree-l2.current > ul,
   html.theme-dark .wy-menu-vertical li.toctree-l1 > ul,
-  html.theme-dark .wy-menu-vertical li.toctree-l2 > ul {
+  html.theme-dark .wy-menu-vertical li.toctree-l2 > ul,
+  html.theme-dark .wy-menu-vertical li > ul {
     background: transparent !important;
   }
   html.theme-dark .wy-menu-vertical li.toctree-l2 > a,
