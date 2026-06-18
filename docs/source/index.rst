@@ -30,4 +30,4 @@ This dataset closes that gap — contributions accepted across all domains.
 Quick Links
 -----------
 
-- `Query Entry Form (UI) <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+- `Query Entry Form (UI) <https://infometry-infofiscus.github.io/InfoFiscus-Stratum/>`_
