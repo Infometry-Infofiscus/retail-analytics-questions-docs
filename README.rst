@@ -35,7 +35,7 @@ How to Contribute
 
 No repository access needed. All submissions go through the UI form:
 
-1. Open the `Query Entry Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+1. Open the `Query Entry Form <https://infometry-infofiscus.github.io/InfoFiscus-Stratum/>`_
 2. Fill in all required fields (business question, context, KPIs, schema, SQL)
 3. Copy the generated JSON and post it in a `Discussion thread <https://github.com/Infometry-Infofiscus/retail-analytics-questions-docs/discussions>`_
 4. Maintainers review and ingest — target turnaround: 7 days
