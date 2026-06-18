@@ -70,7 +70,7 @@ handle ingestion.
 Step 1 — Open the Form
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Open the `Query Entry Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+Open the `Query Entry Form <https://infometry-infofiscus.github.io/InfoFiscus-Stratum/>`_
 in your browser. No login or account needed.
 
 Step 2 — Select Your Domain
