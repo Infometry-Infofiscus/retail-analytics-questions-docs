@@ -233,4 +233,4 @@ You'll receive feedback directly in your Discussion thread.
 ----
 
 .. seealso::
-   :doc:`data_spec` · :doc:`schema_reference` · :doc:`examples` · `Submit Form <https://infometry-infofiscus.github.io/text2sql_data_collection_platform/>`_
+   :doc:`data_spec` · :doc:`schema_reference` · :doc:`examples` · `Submit Form <https://infometry-infofiscus.github.io/InfoFiscus-Stratum/>`_
